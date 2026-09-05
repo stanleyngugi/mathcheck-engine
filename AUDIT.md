@@ -118,3 +118,12 @@ The existing full suite separately passed 63 tests and 38 subtests in this cycle
 These tests extend regression evidence, not a proof that the implementation has
 no bugs or that arbitrary problem translations are faithful. Runtime code and
 the native compiler/runtime trust boundary are unchanged.
+# v0.3 contract and packaging validation
+
+The v0.3 milestone adds a concise supported-interface/limits guide and compatible
+package versioning. It does not expand the mathematical language or change the
+native compiler/runtime trust model. Independent installation remains supported.
+The pinned live suite passed 65 tests and 38 subtests. The sibling solver's fixed
+release matrix adds 24 negatives and six positive controls, with actual native
+checks for mathematical rejection and a separate classification for invalid input.
+That matrix passed all 30 cases. It is not a universal false-positive guarantee.
