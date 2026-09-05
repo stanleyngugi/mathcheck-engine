@@ -41,13 +41,14 @@ class CheckerRunConfig:
     timeout_seconds: int = 20
     workdir: str | None = None
     min_lean_version: tuple[int, int, int] = (4, 22, 0)
-    execution_mode: ExecutionMode = "auto"
+    execution_mode: ExecutionMode = "oneshot_cli"
     persistent_restart_budget: int = 1
     persistent_settle_seconds: float = 0.25
     persistent_startup_timeout_seconds: int = 8
     persistent_fallback_to_oneshot: bool = True
     persistent_workers: int = 1
     persistent_queue_timeout_seconds: float = 30.0
+    preflight_timeout_seconds: int = 30
 
 
 @dataclass(slots=True)
@@ -474,6 +475,7 @@ class LeanCheckerRunner:
         self.config = config or CheckerRunConfig()
         self._preflight_checked = False
         self._preflight_error: str | None = None
+        self._preflight_timed_out = False
         self._persistent_backend: _PersistentLeanServerBackend | None = None
         self._persistent_pool: list[_PersistentLeanServerBackend | None] | None = None
         self._persistent_pool_locks: list[threading.Lock] = []
@@ -557,7 +559,7 @@ class LeanCheckerRunner:
                 stdout="",
                 stderr=preflight_error,
                 duration_ms=0,
-                timed_out=False,
+                timed_out=self._preflight_timed_out,
                 sanitizer_result=sanitizer_result,
             )
 
@@ -610,6 +612,12 @@ class LeanCheckerRunner:
             return self._run_lean_file(source, sanitizer_result, backend_mode="oneshot_cli")
 
         result = self._run_persistent_backend(source, sanitizer_result)
+        # An empty LSP diagnostic batch can precede completion of elaboration.
+        # A quiet interval is not evidence that the theorem has been checked.
+        if result.success:
+            return self._run_lean_file(
+                source, sanitizer_result, backend_mode="persistent_confirmed_cli",
+            )
         persistent_timeout = result.backend_mode == "persistent_server" and result.timed_out
         if not result.backend_error and not persistent_timeout:
             return result
@@ -761,6 +769,8 @@ class LeanCheckerRunner:
             return self._preflight_error
 
         self._preflight_checked = True
+        self._preflight_error = None
+        self._preflight_timed_out = False
         required = self.config.min_lean_version
         required_text = f"{required[0]}.{required[1]}.{required[2]}"
 
@@ -769,12 +779,15 @@ class LeanCheckerRunner:
                 [self.config.lean_executable, "--version"],
                 capture_output=True,
                 text=True,
-                timeout=5,
+                timeout=self.config.preflight_timeout_seconds,
             )
         except FileNotFoundError:
             self._preflight_error = f"Lean executable `{self.config.lean_executable}` not found."
             return self._preflight_error
         except subprocess.TimeoutExpired:
+            # Load-related startup failures must not poison this runner forever.
+            self._preflight_checked = False
+            self._preflight_timed_out = True
             self._preflight_error = (
                 f"Lean preflight timed out while checking `{self.config.lean_executable} --version`."
             )

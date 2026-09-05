@@ -43,7 +43,7 @@ def build_checker_template(
 
     template = dedent(
         f"""
-        {import_line}set_option maxRecDepth {max_rec_depth}
+        set_option maxRecDepth {max_rec_depth}
         set_option maxHeartbeats {max_heartbeats}
 
         def powMod (base exp mod : Nat) : Nat :=
@@ -76,18 +76,19 @@ def build_checker_template(
                   else loop (i + 1) (acc * (n - i) / (i + 1)) fuel'
             loop 0 1 (k + 1)
 
-        {formula_definition}
-
-        def expected : Array Nat := {expected_literal}
-
-        {theorem_block}
         """
     ).strip()
-    return template + "\n"
+    return (
+        import_line + template + "\n\n" + formula_definition.strip()
+        + f"\n\ndef expected : Array Nat := {expected_literal}\n\n"
+        + theorem_block + "\n"
+    )
 
 
 def _lean_nat_array_literal(values: Sequence[int]) -> str:
-    if any(v < 0 for v in values):
+    if not values:
+        raise ValueError("Expected values must contain at least one observation.")
+    if any(type(v) is not int or v < 0 for v in values):
         raise ValueError("Expected values must be non-negative Nat literals.")
     values_text = ", ".join(str(v) for v in values)
     return f"#[{values_text}]"

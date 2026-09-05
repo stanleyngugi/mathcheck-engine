@@ -48,3 +48,10 @@ lake-manifest.json
 *.swo
 *~
 .DS_Store
+
+# Local credentials and runtime state
+.env
+.env.*
+local/
+secrets/
+artifacts/

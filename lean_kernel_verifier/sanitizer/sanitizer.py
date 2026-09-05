@@ -7,7 +7,10 @@ from typing import Any
 from ..core.contracts import LeanCheckerArtifact, validate_artifact_schema
 
 BANNED_ATTRIBUTES = {"implemented_by", "extern", "csimp"}
-BANNED_DECLARATION_KEYWORDS = {"unsafe", "partial", "opaque", "axiom", "attribute"}
+BANNED_DECLARATION_KEYWORDS = {
+    "unsafe", "partial", "opaque", "axiom", "attribute", "initialize",
+    "builtin_initialize", "run_cmd", "elab", "macro", "syntax",
+}
 DISALLOWED_PROOF_PLACEHOLDERS = {"sorry", "admit"}
 ALLOWED_SET_OPTIONS = {"maxRecDepth", "maxHeartbeats"}
 REQUIRED_TEMPLATE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
@@ -212,7 +215,7 @@ def _canonical_attribute_name(name: str) -> str:
 
 
 def _module_allowed(module: str, profile: str) -> bool:
-    if module.startswith("Init"):
+    if module == "Init" or module.startswith("Init."):
         return True
     if profile == "B" and module == "Mathlib.Tactic":
         return True
@@ -223,6 +226,10 @@ def _validate_template_contract(source: str) -> list[str]:
     errors: list[str] = []
     code_only_source = _strip_comments_preserving_lines(source)
     code_only_no_strings = _strip_string_literals_preserving_lines(code_only_source)
+    if re.search(r"^\s*#", code_only_no_strings, re.MULTILINE):
+        errors.append("Template contract violation: command directives are disallowed.")
+    if re.search(r"\bdef\s+expected\s*:\s*Array\s+Nat\s*:=\s*#\[\s*\]", code_only_source):
+        errors.append("Template contract violation: expected observations cannot be empty.")
 
     for name, pattern in REQUIRED_TEMPLATE_PATTERNS:
         if pattern.search(code_only_source) is None:

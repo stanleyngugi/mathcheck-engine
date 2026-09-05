@@ -7,6 +7,7 @@ hypothesis ideal via Groebner-basis reduction.
 
 from __future__ import annotations
 
+import ast
 from typing import Any
 
 
@@ -49,7 +50,7 @@ def verify_geometry_statement(
     locals_map = {name: sym for name, sym in zip(variables, syms)}
 
     def parse(text: str):
-        return sp.sympify(str(text).replace("^", "**"), locals=locals_map)
+        return parse_safe(text, locals_map)
 
     hypothesis_polys = []
     try:
@@ -109,7 +110,10 @@ def certify_geometry_statement(
     conclusion numerically.
     """
     result = verify_geometry_statement(hypotheses, conclusion, variables)
-    witness_checks = _check_witness(hypotheses, conclusion, variables, witness)
+    try:
+        witness_checks = _check_witness(hypotheses, conclusion, variables, witness)
+    except (ValueError, TypeError, SyntaxError):
+        witness_checks = {"hypotheses": False, "conclusion": False}
     result["witness"] = {
         "values": witness,
         "satisfies_hypotheses": witness_checks["hypotheses"],
@@ -132,6 +136,8 @@ def _check_witness(
     sp = _load_sympy()
     if sp is None:
         return {"hypotheses": False, "conclusion": False}
+    if set(variables) - witness.keys():
+        return {"hypotheses": False, "conclusion": False}
     syms = {name: sp.Symbol(name) for name in variables}
     substitution = {}
     for name, value in witness.items():
@@ -139,21 +145,45 @@ def _check_witness(
             substitution[syms[name]] = sp.Rational(str(value))
     ok_hypotheses = True
     for lhs, rhs in hypotheses:
-        lhs_value = sp.nsimplify(
-            sp.N(parse_safe(lhs, syms).subs(substitution), 30), rational=True
-        )
-        rhs_value = sp.nsimplify(
-            sp.N(parse_safe(rhs, syms).subs(substitution), 30), rational=True
-        )
+        lhs_value = sp.cancel(parse_safe(lhs, syms).subs(substitution))
+        rhs_value = sp.cancel(parse_safe(rhs, syms).subs(substitution))
         if lhs_value != rhs_value:
             ok_hypotheses = False
             break
-    conclusion_value = sp.nsimplify(
-        sp.N(parse_safe(conclusion, syms).subs(substitution), 30), rational=True
-    )
+    conclusion_value = sp.cancel(parse_safe(conclusion, syms).subs(substitution))
     return {"hypotheses": ok_hypotheses, "conclusion": conclusion_value == 0}
 
 
 def parse_safe(text: str, symbol_map: dict[str, object]):
+    """Build arithmetic expressions without evaluating Python supplied in text."""
     sp = _load_sympy()
-    return sp.sympify(str(text).replace("^", "**"), locals=symbol_map)
+    if sp is None:
+        raise ValueError("sympy unavailable")
+    source = str(text).replace("^", "**")
+    if len(source) > 10000:
+        raise ValueError("expression too large")
+    tree = ast.parse(source, mode="eval")
+
+    def visit(node):
+        if isinstance(node, ast.Constant) and type(node.value) in (int, float):
+            return sp.Rational(ast.get_source_segment(source, node))
+        if isinstance(node, ast.Name) and node.id in symbol_map:
+            return symbol_map[node.id]
+        if isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.UAdd, ast.USub)):
+            value = visit(node.operand)
+            return -value if isinstance(node.op, ast.USub) else value
+        if isinstance(node, ast.BinOp):
+            left, right = visit(node.left), visit(node.right)
+            if isinstance(node.op, ast.Add):
+                return left + right
+            if isinstance(node.op, ast.Sub):
+                return left - right
+            if isinstance(node.op, ast.Mult):
+                return left * right
+            if isinstance(node.op, ast.Div) and right != 0:
+                return left / right
+            if isinstance(node.op, ast.Pow) and right.is_Integer and abs(right) <= 1000:
+                return left ** right
+        raise ValueError("Only declared symbols and arithmetic are allowed")
+
+    return visit(tree.body)
