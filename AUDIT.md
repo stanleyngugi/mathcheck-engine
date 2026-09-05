@@ -106,3 +106,15 @@ the same test limits passed in approximately 54 seconds. This comparison does no
 fingerprint the entire dependency chain and is not a general throughput benchmark.
 Fresh installed-wheel checks imported all 114 modules across both packages and
 confirmed their 0.2.0 versions and the solver's verifier dependency constraint.
+
+## Follow-up: parameter-varying negative controls
+
+Two additional seeded live tests perform 56 Lean checks independently of any
+word-problem benchmark. They vary signed division/modulo, nonzero bounds, sums,
+counts, leastness, and finite pair relations. Correct answers and complete
+certificates pass; adjacent wrong answers, omitted satisfying pairs, and wrong
+cardinalities fail. Both tests passed on pinned Lean 4.23.0 without timeouts.
+The existing full suite separately passed 63 tests and 38 subtests in this cycle.
+These tests extend regression evidence, not a proof that the implementation has
+no bugs or that arbitrary problem translations are faithful. Runtime code and
+the native compiler/runtime trust boundary are unchanged.
