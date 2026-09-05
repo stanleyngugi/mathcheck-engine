@@ -14,7 +14,8 @@ from .runner.checker_runner import LeanCheckerRunner, CheckerRunResult
 from .sanitizer.template import build_checker_template
 
 
-def _expression(text: str, *, predicate: bool, variable: bool) -> str:
+def _expression(text: str, *, predicate: bool, variable: bool,
+                variables: tuple[str, ...] = ('x',)) -> str:
     if not isinstance(text, str) or not text.strip() or len(text) > 2000:
         raise ValueError('expression must be a nonempty string of at most 2000 characters')
     try:
@@ -27,8 +28,8 @@ def _expression(text: str, *, predicate: bool, variable: bool) -> str:
     def visit(node):
         if isinstance(node, ast.Constant) and type(node.value) is int and abs(node.value) <= 10**12:
             return f'({node.value} : Int)', 'int'
-        if isinstance(node, ast.Name) and node.id == 'x' and variable:
-            return '(Int.ofNat x)', 'int'
+        if isinstance(node, ast.Name) and node.id in variables and variable:
+            return f'(Int.ofNat {node.id})', 'int'
         if isinstance(node, ast.UnaryOp):
             value, kind = visit(node.operand)
             if isinstance(node.op, ast.USub) and kind == 'int':

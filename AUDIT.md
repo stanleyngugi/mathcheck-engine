@@ -69,3 +69,40 @@ tests before optimizing throughput. Extend certificate forms only with paired
 positive/negative controls and explicit domains. Add isolated workers and resource
 limits before a network service. Measure statement-checking accuracy separately
 from natural-language translation accuracy and deployment latency.
+
+## Follow-up: complete pair certificates and opt-in isolation (0.2.0)
+
+PairCountSpec accepts bounded predicates over x and y, with at most 10,000 pairs.
+The generated native theorem checks exact equality of the supplied sorted unique
+list with the full satisfying relation and checks its claimed count. Specification
+and certificate digests are retained. Valid-but-incomplete witnesses, wrong counts,
+and constraint-violating pairs are negative controls, not successes. This is only
+completeness within the encoded rectangle, not unbounded mathematical completeness
+or natural-language fidelity.
+
+The lean-isolated CLI uses bubblewrap namespaces, cleared environment, read-only
+system/toolchain mounts, a fresh source workspace, and explicit resource/output
+limits. Missing isolation tools, inaccessible namespaces, or a wrong Lean version
+fail closed. Live probes check that host files and environment variables are
+hidden and that the network namespace differs from the host. A live model-driven
+pair certificate was also accepted through this isolated wrapper.
+
+Initial live testing exposed a malformed Lean template and a test-probe IO type
+annotation error; both were corrected. Some early live runs timed out under
+variable machine load and were not counted as validation successes. The isolation
+limits were not relaxed to obtain a pass. Binary fingerprints identify the Lean
+executable only, not the full trusted compilation/runtime dependency chain.
+
+Isolation is opt-in, CLI-only, and not an audited multi-tenant security guarantee.
+Per-process rlimits are not aggregate cgroups; deployments still need process,
+memory, and scratch-disk quotas and cleanup. The native compiler/runtime and
+configured toolchain/system libraries remain trusted.
+
+Final 0.2.0 validation passed 63 tests and 38 subtests without skips, including
+real certificate controls, sandbox probes, and CLI routing. After mounted-storage
+timeouts, the pinned release archive was extracted onto Linux storage. The Lean
+executable and main shared-library SHA-256 hashes matched the original installation;
+the same test limits passed in approximately 54 seconds. This comparison does not
+fingerprint the entire dependency chain and is not a general throughput benchmark.
+Fresh installed-wheel checks imported all 114 modules across both packages and
+confirmed their 0.2.0 versions and the solver's verifier dependency constraint.

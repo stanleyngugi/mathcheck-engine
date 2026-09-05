@@ -83,4 +83,60 @@ finally:
 
 See [AUDIT.md](AUDIT.md) for findings, verification, and remaining work.
 
+## Complete bounded-pair certificates
+
+`PairCountSpec` extends checking to predicates over two bounded nonnegative
+integers, with at most 10,000 pairs. `PairCertificate` contains a sorted, unique
+list and a claimed count. Lean checks equality with the **entire** satisfying
+relation and checks its length. A list containing only some valid witnesses is
+rejected. Completeness is relative to the stated finite bounds, not an unbounded
+problem or the original prose.
+
+```python
+from lean_kernel_verifier.certificates import PairCountSpec, PairCertificate, verify_pair_certificate
+
+spec = PairCountSpec('x < y and x+y == 4', 0, 5, 0, 5)
+certificate = PairCertificate(((0, 4), (1, 3)), answer=2)
+# Use your configured runner; close it when finished.
+result = verify_pair_certificate(spec, certificate, runner)
+```
+
+The result binds both specification and certificate digests and reports scope
+`encoded_bounded_pair_count_with_complete_enumeration`. It does not claim a
+general combinatorics prover or remove the compiler/runtime trust assumption.
+The verifier CLI also accepts `{"specification": {"kind": "count_pairs", ...},
+"pairs": [[0, 4], [1, 3]], "answer": 2}`. Extra request fields are rejected.
+
+## Opt-in Linux isolation
+
+Installing the package provides the `lean-isolated` executable. Configure a
+standalone Lean 4.23.0 distribution and use this as the CLI checker executable:
+
+```bash
+export LKV_SANDBOX_TOOLCHAIN=/path/to/lean-4.23.0-linux
+lean-isolated --version
+```
+
+Set `CheckerRunConfig(lean_executable="lean-isolated", timeout_seconds=210)`.
+Linux `bubblewrap`, `prlimit`, and usable namespaces are required. Failure to
+isolate or a mismatched Lean version is fatal; there is no direct-execution
+fallback. The wrapper supports one source file or `--version`, not LSP/Mathlib
+project execution. Environment variables and home/project directories are hidden;
+system libraries and the pinned distribution are read-only, while a copied source
+file and scratch directories are writable. Network and process namespaces are
+separate. The configured distribution and mounted system libraries remain trusted.
+
+Limits: 2 GiB address space and 120 CPU seconds per process, 150 seconds wall time
+for compilation plus a 30-second version check, 16 MiB per output file, 128 file
+descriptors, and 256 KiB returned diagnostics. These are not aggregate cgroup
+limits: fork-heavy workloads or many small files need additional deployment
+controls. Use a dedicated worker account/container and disk/process/memory quotas
+before multi-tenant deployment. A host killing the wrapper abruptly can leave
+scratch directories; provision a bounded scratch filesystem and a cleanup policy.
+This is an opt-in isolation layer, not an audited production security guarantee.
+
+`toolchain_identity(root)` in `lean_kernel_verifier.isolation` records the Lean
+binary SHA-256 for audit logs. It is explicitly not an attestation or fingerprint
+of the entire compiler, library, and operating-system dependency chain.
+
 License: MIT for project code; see [LICENSE](LICENSE).
