@@ -127,3 +127,14 @@ The pinned live suite passed 65 tests and 38 subtests. The sibling solver's fixe
 release matrix adds 24 negatives and six positive controls, with actual native
 checks for mathematical rejection and a separate classification for invalid input.
 That matrix passed all 30 cases. It is not a universal false-positive guarantee.
+
+## Public-benchmark development: large certificate representation
+
+The fixed48-check computation sweep originally passed44 checks, with four
+120-second timeouts for large pair certificates. Replacing deeply nested list
+syntax with decimal data decoded and validated inside Lean preserved exact list
+equality and cardinality checking. The single post-fix sweep passed48/48 with no
+operational failures. Both original and repaired measurements are retained in
+evaluation_records; OS cache conditions were not controlled, so timing ratios
+are not general speedup claims. The full suite then passed68 tests and38 subtests
+with pinned real Lean4.23.0, zero skips. No native trust assumption was changed.
