@@ -65,16 +65,32 @@ class PairCertificate:
 
 
 def compile_pair_certificate(spec: PairCountSpec, certificate: PairCertificate) -> str:
+    """Decode bounded decimal data in Lean instead of elaborating a huge list term.
+
+    The decoder is total and failure is explicitly rejected by the checked goal.
+    This changes representation only: exact ordered list equality and answer
+    cardinality are still computed in Lean, without probabilistic fingerprints.
+    """
     expression = _expression(spec.expression, predicate=True, variable=True, variables=('x', 'y'))
-    pairs = ', '.join(f'({x}, {y})' for x, y in certificate.pairs)
+    pairs = ';'.join(f'{x},{y}' for x, y in certificate.pairs)
     definition = (
+        'def decode_pair (text : String) : Option (Nat × Nat) := do\n'
+        '  match text.splitOn "," with\n'
+        '  | [a, b] =>\n'
+        '    let x ← a.toNat?\n'
+        '    let y ← b.toNat?\n'
+        '    if x ≤ 1000000 && y ≤ 1000000 then some (x, y) else none\n'
+        '  | _ => none\n'
+        'def decode_pairs (text : String) : Option (List (Nat × Nat)) :=\n'
+        '  if text.isEmpty then some [] else (text.splitOn ";").mapM decode_pair\n'
+        f'def decoded_pairs : Option (List (Nat × Nat)) := decode_pairs "{pairs}"\n'
         'def valid_pairs : List (Nat × Nat) :=\n'
         f'  let domain := (List.range {spec.x_stop-spec.x_start}).flatMap (fun i =>\n'
         f'    (List.range {spec.y_stop-spec.y_start}).map (fun j => (i + {spec.x_start}, j + {spec.y_start})))\n'
         f'  domain.filter (fun p => let x := p.1; let y := p.2; decide {expression})\n'
-        f'def claimed_pairs : List (Nat × Nat) := [{pairs}]\n'
+        'def claimed_pairs : List (Nat × Nat) := decoded_pairs.getD []\n'
         'def f (_n : Nat) : Nat :=\n'
-        f'  if decide (claimed_pairs = valid_pairs ∧ claimed_pairs.length = {certificate.answer}) then 1 else 0'
+        f'  if decide (decoded_pairs.isSome = true ∧ claimed_pairs = valid_pairs ∧ claimed_pairs.length = {certificate.answer}) then 1 else 0'
     )
     return build_checker_template(definition, [1])
 
