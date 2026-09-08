@@ -36,7 +36,7 @@ def main():
         print(json.dumps(asdict(result)))
         return 0 if result.verified else 1
     except (ValueError, KeyError, TypeError) as exc:
-        print(json.dumps({'verified': False, 'error': str(exc)}))
+        print(json.dumps({'verified': False, 'status': 'invalid_input', 'error': str(exc)}))
         return 2
     finally:
         runner.close()

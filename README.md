@@ -51,7 +51,9 @@ integer evaluation, bounded sums, counts, and least-solution searches. Bounds
 are half-open `[start, stop)`. Model output is parsed as restricted arithmetic,
 then trusted templates generate Lean; arbitrary model-written Lean is unnecessary.
 `verify_answer(spec, candidate, runner)` returns the specification digest,
-candidate, compiler verdict, and explicit scope `encoded_specification_only`.
+candidate, compiler verdict, explicit status, and scope
+`encoded_specification_only`. Backend failures and timeouts are
+`operational_error`, not mathematical rejection.
 
 ```python
 from lean_kernel_verifier.specification import ProblemSpec, verify_answer

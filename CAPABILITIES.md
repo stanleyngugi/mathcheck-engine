@@ -19,6 +19,9 @@ finite trace agreement cannot establish an infinite recurrence or general theore
 the package does not imply kernel-only reduction. Inspect `checker.timed_out`,
 `backend_error`, output and return code before interpreting a failed check.
 A toolchain failure is not evidence that a mathematical claim is false.
+Structured results expose `status`: `checked_success`,
+`mathematical_rejection`, or `operational_error`. Invalid and unsupported
+requests are rejected before these structured APIs run.
 
 Bounds are half-open nonnegative integers up to 1,000,000, with at most 10,000
 values or pairs. Scalar answers must be in `[0, 10**1000)`; pair counts in
@@ -36,6 +39,9 @@ The pinned and tested toolchain is Lean 4.23.0. CLI checking is the default;
 persistent diagnostics require CLI confirmation. The opt-in `lean-isolated`
 Linux wrapper adds namespace/resource isolation and fails closed if unavailable.
 It is not an audited multi-tenant deployment or aggregate-cgroup budget service.
+Callers requiring exact reproducibility may set
+`CheckerRunConfig(required_lean_version=(4, 23, 0))`; a mismatch is an
+operational configuration failure.
 
 Install and test independently of any solver checkout:
 

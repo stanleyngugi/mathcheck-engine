@@ -1,11 +1,27 @@
 import os
 import unittest
+from unittest.mock import Mock
 
 from lean_kernel_verifier.specification import ProblemSpec, compile_answer_check, verify_answer
 from lean_kernel_verifier.runner.checker_runner import CheckerRunConfig, LeanCheckerRunner
+from lean_kernel_verifier.runner.checker_runner import CheckerRunResult
 
 
 class SpecificationTests(unittest.TestCase):
+    def test_verdict_status_separates_rejection_from_operational_failure(self):
+        spec = ProblemSpec('evaluate', '2+2')
+        cases = (
+            (CheckerRunResult(True, 0, '', '', 1, False), 'checked_success'),
+            (CheckerRunResult(False, 1, '', 'false', 1, False), 'mathematical_rejection'),
+            (CheckerRunResult(False, None, '', 'timeout', 1, True), 'operational_error'),
+            (CheckerRunResult(False, None, '', 'backend', 1, False, backend_error=True), 'operational_error'),
+        )
+        for checker, status in cases:
+            with self.subTest(status=status):
+                runner = Mock()
+                runner.run_source.return_value = checker
+                result = verify_answer(spec, 4, runner)
+                self.assertEqual(result.status, status)
     def test_injection_and_unsupported_expressions_are_rejected(self):
         for expression in ('__import__("os")', 'x.__class__', 'answer', 'True', '1/2',
                            '2**100', '(2**16)**16', 'x//0', 'x%(-2)', 'x+x'):

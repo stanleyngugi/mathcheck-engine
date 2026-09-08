@@ -41,6 +41,7 @@ class CheckerRunConfig:
     timeout_seconds: int = 20
     workdir: str | None = None
     min_lean_version: tuple[int, int, int] = (4, 22, 0)
+    required_lean_version: tuple[int, int, int] | None = None
     execution_mode: ExecutionMode = "oneshot_cli"
     persistent_restart_budget: int = 1
     persistent_settle_seconds: float = 0.25
@@ -561,6 +562,7 @@ class LeanCheckerRunner:
                 duration_ms=0,
                 timed_out=self._preflight_timed_out,
                 sanitizer_result=sanitizer_result,
+                backend_error=True,
             )
 
         return self._run_checked_source(
@@ -593,8 +595,9 @@ class LeanCheckerRunner:
                 stdout="",
                 stderr=preflight_error,
                 duration_ms=0,
-                timed_out=False,
+                timed_out=self._preflight_timed_out,
                 sanitizer_result=sanitizer_result,
+                backend_error=True,
             )
         return self._run_checked_source(
             source=sanitizer_result.sanitized_source,
@@ -815,6 +818,14 @@ class LeanCheckerRunner:
             return self._preflight_error
 
         detected = tuple(int(match.group(i)) for i in (1, 2, 3))
+        exact = self.config.required_lean_version
+        if exact is not None and detected != exact:
+            detected_text = f"{detected[0]}.{detected[1]}.{detected[2]}"
+            exact_text = f"{exact[0]}.{exact[1]}.{exact[2]}"
+            self._preflight_error = (
+                f"Lean {detected_text} does not match required version {exact_text}."
+            )
+            return self._preflight_error
         if detected < required:
             detected_text = f"{detected[0]}.{detected[1]}.{detected[2]}"
             self._preflight_error = (
@@ -850,7 +861,7 @@ class LeanCheckerRunner:
                 sanitizer_result=sanitizer_result,
                 backend_mode=backend_mode,
                 fallback_used=False,
-                backend_error=False,
+                backend_error=True,
             )
 
         try:
@@ -902,7 +913,7 @@ class LeanCheckerRunner:
                 sanitizer_result=sanitizer_result,
                 backend_mode=backend_mode,
                 fallback_used=False,
-                backend_error=False,
+                backend_error=True,
             )
         finally:
             if tmp_dir is not None:

@@ -60,6 +60,26 @@ class CheckerRunnerTests(unittest.TestCase):
 
         self.assertFalse(result.success)
         self.assertIn("below required >= 4.22.0", result.stderr)
+        self.assertTrue(result.backend_error)
+
+    def test_exact_lean_version_can_be_required(self) -> None:
+        class FakeCompletedProcess:
+            returncode = 0
+            stdout = "Lean (version 4.24.0, x86_64-unknown-linux-gnu, Release)\n"
+            stderr = ""
+
+        runner = LeanCheckerRunner(CheckerRunConfig(
+            lean_executable="lean", required_lean_version=(4, 23, 0),
+        ))
+        source = build_checker_template(
+            formula_definition="def f (n : Nat) : Nat := n + 1",
+            expected_values=[1, 2, 3],
+        )
+        with patch("lean_kernel_verifier.runner.checker_runner.subprocess.run", return_value=FakeCompletedProcess()):
+            result = runner.run_source(source)
+        self.assertFalse(result.success)
+        self.assertTrue(result.backend_error)
+        self.assertIn("does not match required version 4.23.0", result.stderr)
 
     def test_tautological_native_verify_statement_is_rejected_before_preflight(self) -> None:
         runner = LeanCheckerRunner(CheckerRunConfig(lean_executable="__missing_lean_binary__"))

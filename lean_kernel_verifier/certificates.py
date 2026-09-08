@@ -3,7 +3,7 @@ from dataclasses import asdict, dataclass
 import hashlib
 import json
 
-from .specification import _expression, VerificationResult
+from .specification import _expression, checker_status, VerificationResult
 from .sanitizer.template import build_checker_template
 
 
@@ -104,6 +104,7 @@ def verify_pair_certificate(spec: PairCountSpec, certificate: PairCertificate, r
     result = runner.run_source(compile_pair_certificate(spec, certificate))
     return PairVerificationResult(
         spec.digest, certificate.answer, result.success, result,
+        status=checker_status(result),
         scope='encoded_bounded_pair_count_with_complete_enumeration',
         certificate_digest=certificate.digest,
     )

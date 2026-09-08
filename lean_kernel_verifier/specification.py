@@ -9,9 +9,27 @@ import ast
 from dataclasses import asdict, dataclass
 import hashlib
 import json
+from typing import Literal
 
 from .runner.checker_runner import LeanCheckerRunner, CheckerRunResult
 from .sanitizer.template import build_checker_template
+
+VerificationStatus = Literal[
+    'checked_success',
+    'mathematical_rejection',
+    'invalid_input',
+    'unsupported_task',
+    'operational_error',
+]
+
+
+def checker_status(result: CheckerRunResult) -> VerificationStatus:
+    """Classify checker execution without calling infrastructure failure mathematics."""
+    if result.success:
+        return 'checked_success'
+    if result.timed_out or result.backend_error or result.returncode is None:
+        return 'operational_error'
+    return 'mathematical_rejection'
 
 
 def _expression(text: str, *, predicate: bool, variable: bool,
@@ -143,10 +161,11 @@ class VerificationResult:
     answer: int
     verified: bool
     checker: CheckerRunResult
+    status: VerificationStatus = 'checked_success'
     scope: str = 'encoded_specification_only'
     trust: str = 'lean_native_compiler_and_runtime'
 
 
 def verify_answer(spec: ProblemSpec, answer: int, runner: LeanCheckerRunner) -> VerificationResult:
     result = runner.run_source(compile_answer_check(spec, answer))
-    return VerificationResult(spec.digest, answer, result.success, result)
+    return VerificationResult(spec.digest, answer, result.success, result, checker_status(result))
