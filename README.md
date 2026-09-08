@@ -3,6 +3,9 @@
 See [supported interfaces and result meanings](CAPABILITIES.md) for the v0.3
 research contract and exact input limits.
 
+The evidence-backed release narrative, including the 48/48 fixed computational
+sweep, is in [TECHNICAL_ARTICLE.md](TECHNICAL_ARTICLE.md).
+
 Computational verification software: a Lean 4 subprocess runner, source checks,
 finite sequence checking with `native_decide`, and exact recurrence discovery.
 The Python symbolic routines also include polynomial interpolation, rational
