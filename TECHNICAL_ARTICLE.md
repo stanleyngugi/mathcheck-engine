@@ -1,8 +1,9 @@
-# Lean Kernel Verifier: bounded computation with explicit claims
+# MathCheck Engine: bounded computation with explicit claims
 
 ## Abstract
 
-Lean Kernel Verifier v0.3 checks bounded, caller-supplied computational claims.
+MathCheck Engine v0.3 (distributed as `lean-kernel-verifier`) checks bounded,
+caller-supplied computational claims.
 It accepts a restricted specification and candidate answer, constructs Lean 4
 source from trusted templates, and records whether the encoded equality was
 accepted. It also checks complete bounded pair certificates: the supplied pairs

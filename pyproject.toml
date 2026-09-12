@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lean-kernel-verifier"
 version = "0.3.1"
-description = "Deterministic formal verification engine & symbolic kernel for Lean 4"
+description = "MathCheck Engine: bounded mathematical answers checked with generated Lean 4 programs"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"

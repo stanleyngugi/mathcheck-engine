@@ -1,4 +1,11 @@
-# Lean Kernel Verifier
+# MathCheck Engine
+
+**Bounded mathematical answers checked by generated Lean programs.**
+
+The repository and public project name are **MathCheck Engine**. The published
+Python distribution and import path remain `lean-kernel-verifier` and
+`lean_kernel_verifier` in the 0.x series so existing integrations do not break.
+See [BRANDING.md](BRANDING.md) for the naming and compatibility policy.
 
 See [supported interfaces and result meanings](CAPABILITIES.md) for the v0.3
 research contract and exact input limits.
@@ -70,6 +77,9 @@ try:
 finally:
     runner.close()
 ```
+
+For a runnable checked-success and checked-rejection walkthrough, see
+[`examples/bounded_count.py`](examples/bounded_count.py).
 
 The command `python -m lean_kernel_verifier --lean-bin /path/to/lean` accepts a
 JSON object on stdin with `specification` and `answer` fields. It exits nonzero
