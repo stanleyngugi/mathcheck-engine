@@ -53,4 +53,4 @@ LEAN_BIN=/absolute/path/to/lean python -m pytest -q
 No API credentials are required. A missing `LEAN_BIN` skips live checks, which is
 not successful release validation. See README for isolated-runner configuration.
 The post-release contract roadmap is recorded in `FUTURE_CONTRACTS.md`; those
-families are extension targets, not capabilities claimed by v0.3.1.
+families are extension targets, not capabilities claimed by v0.3.2.

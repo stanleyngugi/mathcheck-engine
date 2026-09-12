@@ -1,7 +1,7 @@
 # Future verification contracts roadmap
 
-Status: post-0.3.1 roadmap. None of the items in this document blocks the
-bounded 0.3.1 verifier or the native-verify 0.2.0 release.
+Status: post-0.3.2 roadmap. None of the items in this document blocks the
+bounded 0.3.2 verifier or the MathCheck RL 0.2.1 release.
 
 ## Purpose
 
@@ -270,7 +270,7 @@ hides real or algebraic constructions and semantic translation obligations.
 - Do not call an operational failure a mathematical rejection.
 - Do not claim arbitrary prose fidelity from a successful encoded check.
 - Do not expand bounds without an explicit cost and isolation review.
-- Do not make this roadmap a retroactive blocker for the tested 0.3.1 release.
+- Do not make this roadmap a retroactive blocker for the tested 0.3.2 release.
 
 The durable goal is a growing registry of precisely scoped contracts sharing one
 verification and evidence foundation—not a single interface that ambiguously

@@ -16,6 +16,10 @@ geometry.
 
 The evidence-backed release narrative, including the 48/48 fixed computational
 sweep, is in [TECHNICAL_ARTICLE.md](TECHNICAL_ARTICLE.md).
+The current public release is
+[`v0.3.2`](https://github.com/stanleyngugi/mathcheck-engine/releases/tag/v0.3.2),
+supporting Python 3.11 through 3.13. Exact hashes and release-gate evidence are
+recorded in [RELEASE_EVIDENCE_0.3.2.md](RELEASE_EVIDENCE_0.3.2.md).
 
 Computational verification software: a Lean 4 subprocess runner, source checks,
 finite sequence checking with `native_decide`, and exact recurrence discovery.
