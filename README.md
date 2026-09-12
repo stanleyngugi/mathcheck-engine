@@ -38,11 +38,13 @@ proposal mechanisms, not universal proofs.
 See the [Lean reference on proof validation](https://lean-lang.org/doc/reference/latest/ValidatingProofs/).
 The project name does not imply kernel-only reduction.
 
-The sanitizer uses lexical checks, not Lean's AST. The runner uses subprocess
-timeouts, not an operating-system sandbox. Do not expose it as a service for
-arbitrary untrusted Lean code without external process, filesystem, network,
-and resource isolation. Profile B additionally needs a compatible Mathlib
-installation; the automated native tests use Profile A and Lean 4.23.0.
+The sanitizer uses lexical checks, not Lean's AST. The raw runner uses
+subprocess timeouts and is not an operating-system sandbox. For untrusted
+input, configure the opt-in Linux `lean-isolated` wrapper below; do not
+expose the raw runner as a service. Multi-tenant deployment still needs
+aggregate process, storage, and memory limits beyond this wrapper. Profile B
+additionally needs a compatible Mathlib installation; the automated native
+tests use Profile A and Lean 4.23.0.
 
 ## Install and test
 
