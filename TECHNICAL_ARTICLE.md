@@ -1,4 +1,9 @@
-# What It Takes to Trust a Bounded Mathematical Answer
+# How We Built a Lean-Backed Verifier for Bounded Mathematical Answers
+
+> MathCheck Engine turns restricted integer specifications and candidate
+> answers into generated Lean 4 programs, evaluates them with `native_decide`
+> inside a fail-closed sandbox, and reports exactly what the resulting verdict
+> establishes.
 
 An integer answer looks like the simplest possible thing to verify. If a model
 says the answer is 33, compare it with 33 and award a point. That is how many
@@ -548,5 +553,5 @@ MathCheck Engine is public under the MIT license at
 artifacts are available at
 <https://github.com/stanleyngugi/mathcheck-engine/releases/tag/v0.3.2>.
 The companion article,
-[Training on Mathematical Specifications Instead of Hidden Answers](https://github.com/stanleyngugi/mathcheck-rl/blob/main/TECHNICAL_ARTICLE.md),
+[How MathCheck RL Replaces Hidden Answer Keys with Lean-Checked Rewards](https://github.com/stanleyngugi/mathcheck-rl/blob/main/TECHNICAL_ARTICLE.md),
 shows how this checking boundary becomes a reinforcement-learning reward.
