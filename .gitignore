@@ -52,6 +52,13 @@ lake-manifest.json
 # Local credentials and runtime state
 .env
 .env.*
+*.env
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
 local/
 secrets/
+credentials/
 artifacts/

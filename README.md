@@ -3,6 +3,10 @@
 See [supported interfaces and result meanings](CAPABILITIES.md) for the v0.3
 research contract and exact input limits.
 
+See [future verification contracts](FUTURE_CONTRACTS.md) for the preserved,
+non-blocking expansion plan across number theory, combinatorics, algebra, and
+geometry.
+
 The evidence-backed release narrative, including the 48/48 fixed computational
 sweep, is in [TECHNICAL_ARTICLE.md](TECHNICAL_ARTICLE.md).
 
