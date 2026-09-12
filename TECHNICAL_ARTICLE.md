@@ -1,4 +1,4 @@
-# How We Built a Lean-Backed Verifier for Bounded Mathematical Answers
+# Building a Lean-Backed Verifier for Bounded Mathematical Answers
 
 > MathCheck Engine turns restricted integer specifications and candidate
 > answers into generated Lean 4 programs, evaluates them with `native_decide`
