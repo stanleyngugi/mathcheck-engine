@@ -553,5 +553,5 @@ MathCheck Engine is public under the MIT license at
 artifacts are available at
 <https://github.com/stanleyngugi/mathcheck-engine/releases/tag/v0.3.2>.
 The companion article,
-[How MathCheck RL Replaces Hidden Answer Keys with Lean-Checked Rewards](https://github.com/stanleyngugi/mathcheck-rl/blob/main/TECHNICAL_ARTICLE.md),
+[How MathCheck RL Replaces Hidden Answer Keys with Lean-Checked Rewards](https://stanleyngugi.netlify.app/posts/mathcheck-rl.html),
 shows how this checking boundary becomes a reinforcement-learning reward.
