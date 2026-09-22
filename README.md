@@ -14,8 +14,8 @@ See [future verification contracts](FUTURE_CONTRACTS.md) for the preserved,
 non-blocking expansion plan across number theory, combinatorics, algebra, and
 geometry.
 
-The evidence-backed release narrative, including the 48/48 fixed computational
-sweep, is in [TECHNICAL_ARTICLE.md](TECHNICAL_ARTICLE.md).
+The technical article,
+[`Building a Lean-Backed Verifier for Bounded Mathematical Answers`](https://stanleyngugi.netlify.app/posts/mathcheck-engine.html), includes the 48/48 fixed computational sweep.
 The current public release is
 [`v0.3.2`](https://github.com/stanleyngugi/mathcheck-engine/releases/tag/v0.3.2),
 supporting Python 3.11 through 3.13. Exact hashes and release-gate evidence are
