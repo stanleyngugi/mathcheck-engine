@@ -28,14 +28,32 @@ VerificationStatus = Literal[
 # Match complete diagnostics, rather than an exit code or isolated words.
 # CLI prefixes and our formatted LSP prefixes are supported. Unknown formats,
 # truncated output, and additional errors deliberately remain inconclusive.
-_NATIVE_FALSE_DIAGNOSTICS = re.compile(
-    r"(?:"
+_NATIVE_FALSE_HEADER = re.compile(
     r"(?:[^\n]+:\d+:\d+:\s*error:\s*|error:\s*|\[\d+:\d+\]\s*)"
-    r"Tactic `native_decide` evaluated that the proposition\n"
-    r"(?:[ \t]+[^\n]*\n)+"
-    r"is false\s*"
-    r")+"
+    r"Tactic `native_decide` evaluated that the proposition"
 )
+
+
+def _native_false_diagnostics(output: str) -> bool:
+    # Scan lines rather than matching nested multiline quantifiers. Long or
+    # truncated pretty-printed propositions must not cause regex backtracking.
+    lines = output.strip().splitlines()
+    index = 0
+    decisions = 0
+    while index < len(lines):
+        if not _NATIVE_FALSE_HEADER.fullmatch(lines[index]):
+            return False
+        index += 1
+        proposition_start = index
+        while index < len(lines) and lines[index].startswith((' ', '\t')):
+            index += 1
+        if index == proposition_start or index == len(lines) or lines[index] != 'is false':
+            return False
+        decisions += 1
+        index += 1
+        while index < len(lines) and not lines[index].strip():
+            index += 1
+    return decisions > 0
 
 
 def checker_status(result: CheckerRunResult) -> VerificationStatus:
@@ -49,7 +67,7 @@ def checker_status(result: CheckerRunResult) -> VerificationStatus:
     if result.success and result.returncode == 0:
         return 'checked_success'
     output = (result.stdout + '\n' + result.stderr).strip()
-    if result.returncode == 1 and _NATIVE_FALSE_DIAGNOSTICS.fullmatch(output):
+    if result.returncode == 1 and _native_false_diagnostics(output):
         return 'mathematical_rejection'
     return 'operational_error'
 

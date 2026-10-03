@@ -44,3 +44,9 @@ def test_native_false_message_cannot_override_a_process_failure():
 def test_multiple_complete_negative_diagnostics_are_recognized():
     output = '\n'.join('verify.lean:43:2: error: ' + FALSE_MESSAGE for _ in range(2))
     assert checker_status(CheckerRunResult(False, 1, output, '', 1, False)) == 'mathematical_rejection'
+
+
+def test_large_truncated_pretty_printed_proposition_is_inconclusive():
+    output = 'verify.lean:43:2: error: Tactic `native_decide` evaluated that the proposition\n'
+    output += ('  a very long nested expression\n' * 4096)
+    assert checker_status(CheckerRunResult(False, 1, output, '', 1, False)) == 'operational_error'

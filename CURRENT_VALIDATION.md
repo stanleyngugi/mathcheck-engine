@@ -23,7 +23,7 @@ compiler/translator trust. Its Lean excerpt matches the actual generated
 `examples/generated_count.lean` core modulo whitespace. Specification serialization,
 arithmetic semantics and result fields have not changed.
 
-Fresh source result on Python 3.12.14: **84 passed, 10 live/platform skips,
+Fresh source result on Python 3.12.14: **85 passed, 10 live/platform skips,
 40 subtests passed**. Diff hygiene and independent arithmetic examples pass.
 The joint artifact/checking record is maintained in MathCheck RL's
 `docs/CURRENT_VALIDATION.md` after synchronizing its immutable Engine dependency.
