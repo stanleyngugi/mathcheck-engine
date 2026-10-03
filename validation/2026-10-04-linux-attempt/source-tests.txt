@@ -1,0 +1,13 @@
+.......................ss..............ssss........sss..................s......................          [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_generated_certification.py:12: set LEAN_BIN for generated live checks
+SKIPPED [1] tests/test_generated_certification.py:41: set LEAN_BIN for generated live checks
+SKIPPED [1] tests/test_isolation.py:26: set LEAN_BIN for live isolation
+SKIPPED [1] tests/test_isolation.py:46: set LEAN_BIN for live namespace probe
+SKIPPED [1] tests/test_live_lean.py:11: Set LEAN_BIN for real Lean integration tests
+SKIPPED [1] tests/test_live_lean.py:26: Set LEAN_BIN for real Lean integration tests
+SKIPPED [1] tests/test_pair_certificates.py:37: set LEAN_BIN for real certificate checks
+SKIPPED [1] tests/test_pair_certificates.py:55: set LEAN_BIN for real certificate checks
+SKIPPED [1] tests/test_pair_certificates.py:69: set LEAN_BIN for real certificate checks
+SKIPPED [1] tests/test_specification.py:53: Set LEAN_BIN to compile specification checks
+85 passed, 10 skipped, 40 subtests passed in 0.42s

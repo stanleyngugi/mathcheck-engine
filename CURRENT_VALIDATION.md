@@ -1,3 +1,43 @@
+# Fresh Engine closeout attempt — 2026-10-04
+
+**0.3.3 remains unpublished; native release validation is blocked.**
+The exact source tested and built was
+`dce2fc88cee1e98ed3136ac89a4b40eba0d1ada7`. GitHub main matched that commit
+before this evidence-only update. No runtime or package metadata changed.
+
+The [full report and logs](validation/2026-10-04-linux-attempt/README.md)
+record fresh source, build, installed-wheel, stock Lean, and isolation attempts:
+
+- Without `LEAN_BIN`: **85 passed, 10 required skips, 40 subtests passed**.
+- With the downloaded stock Lean explicitly configured: exit 1,
+  **19 failed, 87 passed, 41 subtests passed**, no skips. The summary includes
+  failed unittest subtests; all ten required live entries were attempted and
+  none cleared its complete gate. This is not native acceptance evidence.
+- Two candidate wheels are byte-identical, SHA-256
+  `11dca4da84c56c4f045fe1e58c959db8a3d1490bdc6a78f4d97d4b871b45bca7`.
+  Supplementary source archives build with identical file contents but differ
+  in archive bytes; they are not claimed as repeatable release artifacts.
+- A fresh wheel environment outside the checkout passes `pip check`. All 23
+  package Python files match the wheel and audited source. Installed CLI
+  duplicate-key/invalid-input controls and operational-error controls pass;
+  a real subprocess timeout is demonstrated with an explicitly non-Lean fixture.
+- The official Lean 4.23.0 archive and extracted binary hashes match the recorded
+  fingerprints below. Nevertheless, the stock version probe exits 1 with
+  `error: failed to locate application`. This worker has no `/proc` directory.
+  Bubblewrap 0.9.0 and a separate namespace attempt both fail on missing `/proc`
+  entries. Configured installed `lean-isolated` exits 125; no fallback was used.
+
+**Zero current native mathematical acceptances or rejections were established.**
+The report gives exact commands, dependencies, provenance, structured results,
+artifact hashes, and four finite remaining gates: capable Linux execution,
+complete native source checks, fresh installed isolated consumer checks, then
+verified GitHub publication. No required PyPI step was established. RL's
+candidate pin remains the audited source above; an evidence-only commit adds
+no compatibility change. Later implementation/metadata changes require new
+immutable RL pins, rebuilding, and joint native validation before Prime Hub.
+
+---
+
 # Candidate source validation — 2026-10-03
 
 Candidate source version: **0.3.3**. No candidate release was published;

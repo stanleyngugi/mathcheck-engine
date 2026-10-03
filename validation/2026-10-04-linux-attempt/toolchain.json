@@ -1,0 +1,5 @@
+{
+  "archive_sha256": "ecd028d6f642b61b451c8687aeeb24dd53789fbfdcb7d4adb8f5cf60eb2022ba",
+  "binary_sha256": "cbf5fd536e142ef1beaccf33f788fd8a7f3f29fb214e75c11319a8d8677b4b2b",
+  "root": "/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux"
+}

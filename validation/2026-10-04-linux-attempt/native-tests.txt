@@ -1,0 +1,455 @@
+.......................FF..............FF.F........FFF.... [ 61%]
+.................................. [ 96%]
+...                                                                      [100%]
+=================================== FAILURES ===================================
+__________ test_generated_signed_arithmetic_bounds_and_wrong_answers ___________
+
+    @pytest.mark.skipif(not os.environ.get('LEAN_BIN'), reason='set LEAN_BIN for generated live checks')
+    def test_generated_signed_arithmetic_bounds_and_wrong_answers():
+        rng = random.Random(20260905)
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        try:
+            for _ in range(4):
+                start = rng.randrange(0, 6)
+                stop = start+rng.randrange(5, 16)
+                divisor = rng.randrange(2, 9)
+                shift = rng.randrange(1, 20)
+                threshold = rng.randrange(start, stop)
+                cases = [
+                    (ProblemSpec('evaluate', f'100 + (-{shift})//{divisor} + (-{shift})%{divisor}'),
+                     100+(-shift)//divisor+(-shift)%divisor),
+                    (ProblemSpec('sum', f'100 + (x-{shift})//{divisor}', start, stop),
+                     sum(100+(x-shift)//divisor for x in range(start, stop))),
+                    (ProblemSpec('count', f'not (x%{divisor} == 0) and x != {threshold}', start, stop),
+                     sum(x % divisor != 0 and x != threshold for x in range(start, stop))),
+                    (ProblemSpec('minimum', f'x >= {threshold}', start, stop), threshold),
+                ]
+                for spec, answer in cases:
+                    for candidate, expected in ((answer, True), (answer+1, False)):
+                        result = verify_answer(spec, candidate, runner)
+                        assert not result.checker.timed_out
+>                       assert result.verified is expected, (spec, candidate, result.checker)
+E                       AssertionError: (ProblemSpec(kind='evaluate', expression='100 + (-19)//2 + (-19)%2', start=0, stop=0), 91, CheckerRunResult(success=Fa... errors=[], warnings=[], stripped_attributes=[]), backend_mode='oneshot_cli', fallback_used=False, backend_error=True))
+E                       assert False is True
+E                        +  where False = VerificationResult(specification_digest='ea8c47eeaa52c6e6b1ed4edd8654bb0be5a4d329ab1b60ae383191fbc9fc0e9f', answer=91,..._error=True), status='operational_error', scope='encoded_specification_only', trust='lean_native_compiler_and_runtime').verified
+
+tests/test_generated_certification.py:36: AssertionError
+__________ test_generated_pairs_reject_omission_and_wrong_cardinality __________
+
+    @pytest.mark.skipif(not os.environ.get('LEAN_BIN'), reason='set LEAN_BIN for generated live checks')
+    def test_generated_pairs_reject_omission_and_wrong_cardinality():
+        rng = random.Random(9052026)
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        try:
+            for _ in range(8):
+                start, width = rng.randrange(0, 5), rng.randrange(4, 9)
+                stop, divisor = start+width, rng.randrange(2, 5)
+                spec = PairCountSpec(f'x < y and (x-y)%{divisor} != 0', start, stop, start, stop)
+                pairs = tuple((x, y) for x in range(start, stop) for y in range(start, stop)
+                              if x < y and (x-y) % divisor != 0)
+                assert pairs
+                for certificate, expected in ((PairCertificate(pairs, len(pairs)), True),
+                                              (PairCertificate(pairs[:-1], len(pairs)-1), False),
+                                              (PairCertificate(pairs, len(pairs)+1), False)):
+                    result = verify_pair_certificate(spec, certificate, runner)
+                    assert not result.checker.timed_out
+>                   assert result.verified is expected, (spec, certificate, result.checker)
+E                   AssertionError: (PairCountSpec(expression='x < y and (x-y)%4 != 0', x_start=4, x_stop=10, y_start=4, y_stop=10, kind='count_pairs'), P... errors=[], warnings=[], stripped_attributes=[]), backend_mode='oneshot_cli', fallback_used=False, backend_error=True))
+E                   assert False is True
+E                    +  where False = PairVerificationResult(specification_digest='55b6b7d8e9b624d73a89a927f27ceca5fdf29182c8b52fe66e2403f56f9475ab', answer...an_native_compiler_and_runtime', certificate_digest='5bea0f0809c3de3e809a217808b8c6644b4d864fcc1611a32cb134644dc09941').verified
+
+tests/test_generated_certification.py:58: AssertionError
+_____________ test_live_isolation_hides_host_files_and_environment _____________
+
+tmp_path = PosixPath('/workspace/scratch/cff1035d7206/engine-closeout-20261004/pytest-native/test_live_isolation_hides_host0')
+
+    @pytest.mark.skipif(not os.environ.get('LEAN_BIN'), reason='set LEAN_BIN for live isolation')
+    def test_live_isolation_hides_host_files_and_environment(tmp_path):
+        # An intentionally unsanitized Lean IO probe tests isolation, not theorem validity.
+        toolchain = Path(os.environ['LEAN_BIN']).resolve().parent.parent
+        marker = tmp_path / 'host-secret'
+        marker.write_text('private')
+        source = tmp_path / 'probe.lean'
+        source.write_text('#eval show IO Unit from do\n'
+                          f'  let visible ← System.FilePath.pathExists "{marker}"\n'
+                          '  let secret ← IO.getEnv "LKV_TEST_SECRET"\n'
+                          '  if visible || secret.isSome then throw (IO.userError "isolation failed")\n'
+                          '  IO.println "isolation-ok"\n')
+        env = dict(os.environ, LKV_SANDBOX_TOOLCHAIN=str(toolchain), LKV_TEST_SECRET='must-not-cross')
+        proc = subprocess.run([sys.executable, '-m', 'lean_kernel_verifier.isolation', str(source)],
+                              env=env, capture_output=True, text=True, timeout=180)
+>       assert proc.returncode == 0, proc.stdout + proc.stderr
+E       AssertionError: isolated checker requires an accessible Lean 4.23.0 toolchain
+E         
+E       assert 125 == 0
+E        +  where 125 = CompletedProcess(args=['/workspace/scratch/cff1035d7206/.engine-closeout-venv/bin/python', '-m', 'lean_kernel_verifier...ost0/probe.lean'], returncode=125, stdout='', stderr='isolated checker requires an accessible Lean 4.23.0 toolchain\n').returncode
+
+tests/test_isolation.py:41: AssertionError
+___________________ test_live_network_namespace_is_separate ____________________
+
+tmp_path = PosixPath('/workspace/scratch/cff1035d7206/engine-closeout-20261004/pytest-native/test_live_network_namespace_is0')
+
+    @pytest.mark.skipif(not os.environ.get('LEAN_BIN'), reason='set LEAN_BIN for live namespace probe')
+    def test_live_network_namespace_is_separate(tmp_path):
+        toolchain = Path(os.environ['LEAN_BIN']).resolve().parent.parent
+        command = isolated_command(toolchain, tmp_path, [])
+        command[-1:] = ['/usr/bin/python3', '-c', 'import os; print(os.readlink("/proc/self/ns/net"))']
+        proc = subprocess.run(command, capture_output=True, text=True, timeout=30)
+>       assert proc.returncode == 0, proc.stderr
+E       AssertionError: bwrap: Can't read /proc/sys/kernel/overflowuid: No such file or directory
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/bin/prlimit', '--as=2147483648', '--cpu=120', '--fsize=16777216', '--nofile=128', '--core...et"))'], returncode=1, stdout='', stderr="bwrap: Can't read /proc/sys/kernel/overflowuid: No such file or directory\n").returncode
+
+tests/test_isolation.py:52: AssertionError
+___ LiveLeanTests.test_correct_and_incorrect_observations (values=[1, 2, 3]) ___
+
+self = <test_live_lean.LiveLeanTests testMethod=test_correct_and_incorrect_observations>
+
+    def test_correct_and_incorrect_observations(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(
+            lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120,
+        ))
+        try:
+            for values, expected in (([1, 2, 3], True), ([1, 2, 4], False)):
+                with self.subTest(values=values):
+                    result = runner.run_source(build_checker_template(
+                        'def f (n : Nat) : Nat := n + 1', values,
+                    ))
+>                   self.assertEqual(result.success, expected, result.stdout + result.stderr)
+E                   AssertionError: False != True : Lean preflight failed for `/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux/bin/lean --version` (exit 1). error: failed to locate application
+
+tests/test_live_lean.py:21: AssertionError
+_______________ LiveLeanTests.test_multiline_formula_and_import ________________
+
+self = <test_live_lean.LiveLeanTests testMethod=test_multiline_formula_and_import>
+
+    def test_multiline_formula_and_import(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(
+            lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120,
+        ))
+        try:
+            result = runner.run_source(build_checker_template(
+                'def f (n : Nat) : Nat :=\n  choose n 2', [0, 0, 1, 3, 6],
+                extra_imports=['Init'],
+            ))
+>           self.assertTrue(result.success, result.stdout + result.stderr)
+E           AssertionError: False is not true : Lean preflight failed for `/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux/bin/lean --version` (exit 1). error: failed to locate application
+
+tests/test_live_lean.py:35: AssertionError
+________ test_live_maximum_certificate_positive_and_incomplete_negative ________
+
+    @pytest.mark.skipif(not os.environ.get('LEAN_BIN'), reason='set LEAN_BIN for real certificate checks')
+    def test_live_maximum_certificate_positive_and_incomplete_negative():
+        spec = PairCountSpec('x >= 0', 0, 100, 0, 100)
+        pairs = tuple((x, y) for x in range(100) for y in range(100))
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        try:
+            for claimed, answer, expected in ((pairs, 10000, True), (pairs[:5000]+pairs[5001:], 9999, False),
+                                               (pairs, 9999, False)):
+                result = verify_pair_certificate(spec, PairCertificate(claimed, answer), runner)
+                assert not result.checker.timed_out
+>               assert result.verified is expected, result.checker.stdout + result.checker.stderr
+E               AssertionError: Lean preflight failed for `/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux/bin/lean --version` (exit 1). error: failed to locate application
+E               assert False is True
+E                +  where False = PairVerificationResult(specification_digest='5bf8b93891f779aa5bf2cfda0afc6eaecafd5a06368e179707629b652fa94bee', answer...an_native_compiler_and_runtime', certificate_digest='792997484d50d14f21741b147e082b809df2f87509a4605676fbae0eaf60df5a').verified
+
+tests/test_pair_certificates.py:47: AssertionError
+________ test_live_malformed_decoding_cannot_fall_back_to_empty_success ________
+
+    @pytest.mark.skipif(not os.environ.get('LEAN_BIN'), reason='set LEAN_BIN for real certificate checks')
+    def test_live_malformed_decoding_cannot_fall_back_to_empty_success():
+        spec = PairCountSpec('x < y', 0, 0, 0, 1)
+        source = compile_pair_certificate(spec, PairCertificate((), 0))
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        try:
+            for malformed in ('1', 'x,2', '1000001,2', '1,2,3'):
+                result = runner.run_source(source.replace('decode_pairs ""', f'decode_pairs "{malformed}"'))
+                assert not result.success and not result.timed_out
+>               assert 'Tactic `native_decide` evaluated' in result.stdout + result.stderr
+E               AssertionError: assert 'Tactic `native_decide` evaluated' in ('' + 'Lean preflight failed for `/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux/bin/lean --version` (exit 1). error: failed to locate application')
+E                +  where '' = CheckerRunResult(success=False, returncode=None, stdout='', stderr='Lean preflight failed for `/workspace/scratch/cff1..., errors=[], warnings=[], stripped_attributes=[]), backend_mode='oneshot_cli', fallback_used=False, backend_error=True).stdout
+E                +  and   'Lean preflight failed for `/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux/bin/lean --version` (exit 1). error: failed to locate application' = CheckerRunResult(success=False, returncode=None, stdout='', stderr='Lean preflight failed for `/workspace/scratch/cff1..., errors=[], warnings=[], stripped_attributes=[]), backend_mode='oneshot_cli', fallback_used=False, backend_error=True).stderr
+
+tests/test_pair_certificates.py:64: AssertionError
+_______________ test_live_completeness_not_just_witness_validity _______________
+
+    @pytest.mark.skipif(not os.environ.get('LEAN_BIN'), reason='set LEAN_BIN for real certificate checks')
+    def test_live_completeness_not_just_witness_validity():
+        spec = PairCountSpec('x < y and x+y == 4', 0, 5, 0, 5)
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        try:
+            for pairs, answer, expected in (
+                (((0, 4), (1, 3)), 2, True),
+                (((0, 4),), 1, False),  # valid witness, incomplete set
+                (((0, 4), (1, 3)), 1, False),
+                (((0, 4), (2, 2)), 2, False),  # violates strict ordering
+            ):
+                result = verify_pair_certificate(spec, PairCertificate(pairs, answer), runner)
+>               assert result.verified is expected, result.checker.stdout + result.checker.stderr
+E               AssertionError: Lean preflight failed for `/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux/bin/lean --version` (exit 1). error: failed to locate application
+E               assert False is True
+E                +  where False = PairVerificationResult(specification_digest='fd408523a3633ebc5da2299b54c3938352bbfbac268e0447277472eb13eb3984', answer...an_native_compiler_and_runtime', certificate_digest='2326d440376d700725cbbfb7f322392133384c7a67d89d9f5eba4ded8f89d721').verified
+
+tests/test_pair_certificates.py:81: AssertionError
+_ LiveSpecificationTests.test_all_specification_kinds_and_negative_controls (candidate=60, kind='evaluate') _
+
+self = <test_specification.LiveSpecificationTests testMethod=test_all_specification_kinds_and_negative_controls>
+
+    def test_all_specification_kinds_and_negative_controls(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        cases = [
+            (ProblemSpec('evaluate', '(7**5 - 3)//2 % 97'), 60),
+            (ProblemSpec('count', 'x%3 == 0 and x%5 != 0', 1, 31), 8),
+            (ProblemSpec('sum', 'x*x-2*x', 2, 9), 133),
+            (ProblemSpec('minimum', 'x%7 == 3 and x%5 == 2', 0, 100), 17),
+            (ProblemSpec('sum', 'x', 4, 4), 0),
+        ]
+        try:
+            for spec, answer in cases:
+                for candidate, expected in ((answer, True), (answer + 1, False)):
+                    with self.subTest(kind=spec.kind, candidate=candidate):
+                        result = verify_answer(spec, candidate, runner)
+>                       self.assertEqual(result.verified, expected, result.checker.stdout + result.checker.stderr)
+E                       AssertionError: False != True : Lean preflight failed for `/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux/bin/lean --version` (exit 1). error: failed to locate application
+
+tests/test_specification.py:67: AssertionError
+_ LiveSpecificationTests.test_all_specification_kinds_and_negative_controls (candidate=61, kind='evaluate') _
+
+self = <test_specification.LiveSpecificationTests testMethod=test_all_specification_kinds_and_negative_controls>
+
+    def test_all_specification_kinds_and_negative_controls(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        cases = [
+            (ProblemSpec('evaluate', '(7**5 - 3)//2 % 97'), 60),
+            (ProblemSpec('count', 'x%3 == 0 and x%5 != 0', 1, 31), 8),
+            (ProblemSpec('sum', 'x*x-2*x', 2, 9), 133),
+            (ProblemSpec('minimum', 'x%7 == 3 and x%5 == 2', 0, 100), 17),
+            (ProblemSpec('sum', 'x', 4, 4), 0),
+        ]
+        try:
+            for spec, answer in cases:
+                for candidate, expected in ((answer, True), (answer + 1, False)):
+                    with self.subTest(kind=spec.kind, candidate=candidate):
+                        result = verify_answer(spec, candidate, runner)
+                        self.assertEqual(result.verified, expected, result.checker.stdout + result.checker.stderr)
+                        self.assertFalse(result.checker.timed_out)
+>                       self.assertEqual(result.status, 'checked_success' if expected else 'mathematical_rejection')
+E                       AssertionError: 'operational_error' != 'mathematical_rejection'
+E                       - operational_error
+E                       + mathematical_rejection
+
+tests/test_specification.py:69: AssertionError
+_ LiveSpecificationTests.test_all_specification_kinds_and_negative_controls (candidate=8, kind='count') _
+
+self = <test_specification.LiveSpecificationTests testMethod=test_all_specification_kinds_and_negative_controls>
+
+    def test_all_specification_kinds_and_negative_controls(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        cases = [
+            (ProblemSpec('evaluate', '(7**5 - 3)//2 % 97'), 60),
+            (ProblemSpec('count', 'x%3 == 0 and x%5 != 0', 1, 31), 8),
+            (ProblemSpec('sum', 'x*x-2*x', 2, 9), 133),
+            (ProblemSpec('minimum', 'x%7 == 3 and x%5 == 2', 0, 100), 17),
+            (ProblemSpec('sum', 'x', 4, 4), 0),
+        ]
+        try:
+            for spec, answer in cases:
+                for candidate, expected in ((answer, True), (answer + 1, False)):
+                    with self.subTest(kind=spec.kind, candidate=candidate):
+                        result = verify_answer(spec, candidate, runner)
+>                       self.assertEqual(result.verified, expected, result.checker.stdout + result.checker.stderr)
+E                       AssertionError: False != True : Lean preflight failed for `/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux/bin/lean --version` (exit 1). error: failed to locate application
+
+tests/test_specification.py:67: AssertionError
+_ LiveSpecificationTests.test_all_specification_kinds_and_negative_controls (candidate=9, kind='count') _
+
+self = <test_specification.LiveSpecificationTests testMethod=test_all_specification_kinds_and_negative_controls>
+
+    def test_all_specification_kinds_and_negative_controls(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        cases = [
+            (ProblemSpec('evaluate', '(7**5 - 3)//2 % 97'), 60),
+            (ProblemSpec('count', 'x%3 == 0 and x%5 != 0', 1, 31), 8),
+            (ProblemSpec('sum', 'x*x-2*x', 2, 9), 133),
+            (ProblemSpec('minimum', 'x%7 == 3 and x%5 == 2', 0, 100), 17),
+            (ProblemSpec('sum', 'x', 4, 4), 0),
+        ]
+        try:
+            for spec, answer in cases:
+                for candidate, expected in ((answer, True), (answer + 1, False)):
+                    with self.subTest(kind=spec.kind, candidate=candidate):
+                        result = verify_answer(spec, candidate, runner)
+                        self.assertEqual(result.verified, expected, result.checker.stdout + result.checker.stderr)
+                        self.assertFalse(result.checker.timed_out)
+>                       self.assertEqual(result.status, 'checked_success' if expected else 'mathematical_rejection')
+E                       AssertionError: 'operational_error' != 'mathematical_rejection'
+E                       - operational_error
+E                       + mathematical_rejection
+
+tests/test_specification.py:69: AssertionError
+_ LiveSpecificationTests.test_all_specification_kinds_and_negative_controls (candidate=133, kind='sum') _
+
+self = <test_specification.LiveSpecificationTests testMethod=test_all_specification_kinds_and_negative_controls>
+
+    def test_all_specification_kinds_and_negative_controls(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        cases = [
+            (ProblemSpec('evaluate', '(7**5 - 3)//2 % 97'), 60),
+            (ProblemSpec('count', 'x%3 == 0 and x%5 != 0', 1, 31), 8),
+            (ProblemSpec('sum', 'x*x-2*x', 2, 9), 133),
+            (ProblemSpec('minimum', 'x%7 == 3 and x%5 == 2', 0, 100), 17),
+            (ProblemSpec('sum', 'x', 4, 4), 0),
+        ]
+        try:
+            for spec, answer in cases:
+                for candidate, expected in ((answer, True), (answer + 1, False)):
+                    with self.subTest(kind=spec.kind, candidate=candidate):
+                        result = verify_answer(spec, candidate, runner)
+>                       self.assertEqual(result.verified, expected, result.checker.stdout + result.checker.stderr)
+E                       AssertionError: False != True : Lean preflight failed for `/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux/bin/lean --version` (exit 1). error: failed to locate application
+
+tests/test_specification.py:67: AssertionError
+_ LiveSpecificationTests.test_all_specification_kinds_and_negative_controls (candidate=134, kind='sum') _
+
+self = <test_specification.LiveSpecificationTests testMethod=test_all_specification_kinds_and_negative_controls>
+
+    def test_all_specification_kinds_and_negative_controls(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        cases = [
+            (ProblemSpec('evaluate', '(7**5 - 3)//2 % 97'), 60),
+            (ProblemSpec('count', 'x%3 == 0 and x%5 != 0', 1, 31), 8),
+            (ProblemSpec('sum', 'x*x-2*x', 2, 9), 133),
+            (ProblemSpec('minimum', 'x%7 == 3 and x%5 == 2', 0, 100), 17),
+            (ProblemSpec('sum', 'x', 4, 4), 0),
+        ]
+        try:
+            for spec, answer in cases:
+                for candidate, expected in ((answer, True), (answer + 1, False)):
+                    with self.subTest(kind=spec.kind, candidate=candidate):
+                        result = verify_answer(spec, candidate, runner)
+                        self.assertEqual(result.verified, expected, result.checker.stdout + result.checker.stderr)
+                        self.assertFalse(result.checker.timed_out)
+>                       self.assertEqual(result.status, 'checked_success' if expected else 'mathematical_rejection')
+E                       AssertionError: 'operational_error' != 'mathematical_rejection'
+E                       - operational_error
+E                       + mathematical_rejection
+
+tests/test_specification.py:69: AssertionError
+_ LiveSpecificationTests.test_all_specification_kinds_and_negative_controls (candidate=17, kind='minimum') _
+
+self = <test_specification.LiveSpecificationTests testMethod=test_all_specification_kinds_and_negative_controls>
+
+    def test_all_specification_kinds_and_negative_controls(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        cases = [
+            (ProblemSpec('evaluate', '(7**5 - 3)//2 % 97'), 60),
+            (ProblemSpec('count', 'x%3 == 0 and x%5 != 0', 1, 31), 8),
+            (ProblemSpec('sum', 'x*x-2*x', 2, 9), 133),
+            (ProblemSpec('minimum', 'x%7 == 3 and x%5 == 2', 0, 100), 17),
+            (ProblemSpec('sum', 'x', 4, 4), 0),
+        ]
+        try:
+            for spec, answer in cases:
+                for candidate, expected in ((answer, True), (answer + 1, False)):
+                    with self.subTest(kind=spec.kind, candidate=candidate):
+                        result = verify_answer(spec, candidate, runner)
+>                       self.assertEqual(result.verified, expected, result.checker.stdout + result.checker.stderr)
+E                       AssertionError: False != True : Lean preflight failed for `/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux/bin/lean --version` (exit 1). error: failed to locate application
+
+tests/test_specification.py:67: AssertionError
+_ LiveSpecificationTests.test_all_specification_kinds_and_negative_controls (candidate=18, kind='minimum') _
+
+self = <test_specification.LiveSpecificationTests testMethod=test_all_specification_kinds_and_negative_controls>
+
+    def test_all_specification_kinds_and_negative_controls(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        cases = [
+            (ProblemSpec('evaluate', '(7**5 - 3)//2 % 97'), 60),
+            (ProblemSpec('count', 'x%3 == 0 and x%5 != 0', 1, 31), 8),
+            (ProblemSpec('sum', 'x*x-2*x', 2, 9), 133),
+            (ProblemSpec('minimum', 'x%7 == 3 and x%5 == 2', 0, 100), 17),
+            (ProblemSpec('sum', 'x', 4, 4), 0),
+        ]
+        try:
+            for spec, answer in cases:
+                for candidate, expected in ((answer, True), (answer + 1, False)):
+                    with self.subTest(kind=spec.kind, candidate=candidate):
+                        result = verify_answer(spec, candidate, runner)
+                        self.assertEqual(result.verified, expected, result.checker.stdout + result.checker.stderr)
+                        self.assertFalse(result.checker.timed_out)
+>                       self.assertEqual(result.status, 'checked_success' if expected else 'mathematical_rejection')
+E                       AssertionError: 'operational_error' != 'mathematical_rejection'
+E                       - operational_error
+E                       + mathematical_rejection
+
+tests/test_specification.py:69: AssertionError
+_ LiveSpecificationTests.test_all_specification_kinds_and_negative_controls (candidate=0, kind='sum') _
+
+self = <test_specification.LiveSpecificationTests testMethod=test_all_specification_kinds_and_negative_controls>
+
+    def test_all_specification_kinds_and_negative_controls(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        cases = [
+            (ProblemSpec('evaluate', '(7**5 - 3)//2 % 97'), 60),
+            (ProblemSpec('count', 'x%3 == 0 and x%5 != 0', 1, 31), 8),
+            (ProblemSpec('sum', 'x*x-2*x', 2, 9), 133),
+            (ProblemSpec('minimum', 'x%7 == 3 and x%5 == 2', 0, 100), 17),
+            (ProblemSpec('sum', 'x', 4, 4), 0),
+        ]
+        try:
+            for spec, answer in cases:
+                for candidate, expected in ((answer, True), (answer + 1, False)):
+                    with self.subTest(kind=spec.kind, candidate=candidate):
+                        result = verify_answer(spec, candidate, runner)
+>                       self.assertEqual(result.verified, expected, result.checker.stdout + result.checker.stderr)
+E                       AssertionError: False != True : Lean preflight failed for `/workspace/scratch/cff1035d7206/toolchains/lean-4.23.0-linux/bin/lean --version` (exit 1). error: failed to locate application
+
+tests/test_specification.py:67: AssertionError
+_ LiveSpecificationTests.test_all_specification_kinds_and_negative_controls (candidate=1, kind='sum') _
+
+self = <test_specification.LiveSpecificationTests testMethod=test_all_specification_kinds_and_negative_controls>
+
+    def test_all_specification_kinds_and_negative_controls(self):
+        runner = LeanCheckerRunner(CheckerRunConfig(lean_executable=os.environ['LEAN_BIN'], timeout_seconds=120))
+        cases = [
+            (ProblemSpec('evaluate', '(7**5 - 3)//2 % 97'), 60),
+            (ProblemSpec('count', 'x%3 == 0 and x%5 != 0', 1, 31), 8),
+            (ProblemSpec('sum', 'x*x-2*x', 2, 9), 133),
+            (ProblemSpec('minimum', 'x%7 == 3 and x%5 == 2', 0, 100), 17),
+            (ProblemSpec('sum', 'x', 4, 4), 0),
+        ]
+        try:
+            for spec, answer in cases:
+                for candidate, expected in ((answer, True), (answer + 1, False)):
+                    with self.subTest(kind=spec.kind, candidate=candidate):
+                        result = verify_answer(spec, candidate, runner)
+                        self.assertEqual(result.verified, expected, result.checker.stdout + result.checker.stderr)
+                        self.assertFalse(result.checker.timed_out)
+>                       self.assertEqual(result.status, 'checked_success' if expected else 'mathematical_rejection')
+E                       AssertionError: 'operational_error' != 'mathematical_rejection'
+E                       - operational_error
+E                       + mathematical_rejection
+
+tests/test_specification.py:69: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_generated_certification.py::test_generated_signed_arithmetic_bounds_and_wrong_answers
+FAILED tests/test_generated_certification.py::test_generated_pairs_reject_omission_and_wrong_cardinality
+FAILED tests/test_isolation.py::test_live_isolation_hides_host_files_and_environment
+FAILED tests/test_isolation.py::test_live_network_namespace_is_separate - Ass...
+(values=[1, 2, 3]) SUBFAIL tests/test_live_lean.py::LiveLeanTests::test_correct_and_incorrect_observations
+FAILED tests/test_live_lean.py::LiveLeanTests::test_multiline_formula_and_import
+FAILED tests/test_pair_certificates.py::test_live_maximum_certificate_positive_and_incomplete_negative
+FAILED tests/test_pair_certificates.py::test_live_malformed_decoding_cannot_fall_back_to_empty_success
+FAILED tests/test_pair_certificates.py::test_live_completeness_not_just_witness_validity
+(candidate=60, kind='evaluate') SUBFAIL tests/test_specification.py::LiveSpecificationTests::test_all_specification_kinds_and_negative_controls
+(candidate=61, kind='evaluate') SUBFAIL tests/test_specification.py::LiveSpecificationTests::test_all_specification_kinds_and_negative_controls
+(candidate=8, kind='count') SUBFAIL tests/test_specification.py::LiveSpecificationTests::test_all_specification_kinds_and_negative_controls
+(candidate=9, kind='count') SUBFAIL tests/test_specification.py::LiveSpecificationTests::test_all_specification_kinds_and_negative_controls
+(candidate=133, kind='sum') SUBFAIL tests/test_specification.py::LiveSpecificationTests::test_all_specification_kinds_and_negative_controls
+(candidate=134, kind='sum') SUBFAIL tests/test_specification.py::LiveSpecificationTests::test_all_specification_kinds_and_negative_controls
+(candidate=17, kind='minimum') SUBFAIL tests/test_specification.py::LiveSpecificationTests::test_all_specification_kinds_and_negative_controls
+(candidate=18, kind='minimum') SUBFAIL tests/test_specification.py::LiveSpecificationTests::test_all_specification_kinds_and_negative_controls
+(candidate=0, kind='sum') SUBFAIL tests/test_specification.py::LiveSpecificationTests::test_all_specification_kinds_and_negative_controls
+(candidate=1, kind='sum') SUBFAIL tests/test_specification.py::LiveSpecificationTests::test_all_specification_kinds_and_negative_controls
+19 failed, 87 passed, 41 subtests passed in 0.79s

@@ -1,0 +1,212 @@
+* Getting build dependencies for wheel...
+running egg_info
+creating lean_kernel_verifier.egg-info
+writing lean_kernel_verifier.egg-info/PKG-INFO
+writing dependency_links to lean_kernel_verifier.egg-info/dependency_links.txt
+writing entry points to lean_kernel_verifier.egg-info/entry_points.txt
+writing requirements to lean_kernel_verifier.egg-info/requires.txt
+writing top-level names to lean_kernel_verifier.egg-info/top_level.txt
+writing manifest file 'lean_kernel_verifier.egg-info/SOURCES.txt'
+reading manifest file 'lean_kernel_verifier.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file 'lean_kernel_verifier.egg-info/SOURCES.txt'
+* Building wheel...
+running bdist_wheel
+running build
+running build_py
+creating build/lib/lean_kernel_verifier
+copying lean_kernel_verifier/isolation.py -> build/lib/lean_kernel_verifier
+copying lean_kernel_verifier/certificates.py -> build/lib/lean_kernel_verifier
+copying lean_kernel_verifier/__init__.py -> build/lib/lean_kernel_verifier
+copying lean_kernel_verifier/specification.py -> build/lib/lean_kernel_verifier
+copying lean_kernel_verifier/__main__.py -> build/lib/lean_kernel_verifier
+creating build/lib/lean_kernel_verifier/symbolic
+copying lean_kernel_verifier/symbolic/geometry_wu.py -> build/lib/lean_kernel_verifier/symbolic
+copying lean_kernel_verifier/symbolic/holonomic_lite.py -> build/lib/lean_kernel_verifier/symbolic
+copying lean_kernel_verifier/symbolic/__init__.py -> build/lib/lean_kernel_verifier/symbolic
+copying lean_kernel_verifier/symbolic/mining.py -> build/lib/lean_kernel_verifier/symbolic
+creating build/lib/lean_kernel_verifier/consensus
+copying lean_kernel_verifier/consensus/trace_consensus.py -> build/lib/lean_kernel_verifier/consensus
+copying lean_kernel_verifier/consensus/__init__.py -> build/lib/lean_kernel_verifier/consensus
+creating build/lib/lean_kernel_verifier/runner
+copying lean_kernel_verifier/runner/__init__.py -> build/lib/lean_kernel_verifier/runner
+copying lean_kernel_verifier/runner/checker_runner.py -> build/lib/lean_kernel_verifier/runner
+creating build/lib/lean_kernel_verifier/core
+copying lean_kernel_verifier/core/contracts.py -> build/lib/lean_kernel_verifier/core
+copying lean_kernel_verifier/core/__init__.py -> build/lib/lean_kernel_verifier/core
+copying lean_kernel_verifier/core/types.py -> build/lib/lean_kernel_verifier/core
+copying lean_kernel_verifier/core/failure_taxonomy.py -> build/lib/lean_kernel_verifier/core
+creating build/lib/lean_kernel_verifier/sanitizer
+copying lean_kernel_verifier/sanitizer/template.py -> build/lib/lean_kernel_verifier/sanitizer
+copying lean_kernel_verifier/sanitizer/__init__.py -> build/lib/lean_kernel_verifier/sanitizer
+copying lean_kernel_verifier/sanitizer/sanitizer.py -> build/lib/lean_kernel_verifier/sanitizer
+creating build/lib/lean_kernel_verifier/gating
+copying lean_kernel_verifier/gating/__init__.py -> build/lib/lean_kernel_verifier/gating
+copying lean_kernel_verifier/gating/structural.py -> build/lib/lean_kernel_verifier/gating
+copying lean_kernel_verifier/gating/trace_checks.py -> build/lib/lean_kernel_verifier/gating
+running egg_info
+writing lean_kernel_verifier.egg-info/PKG-INFO
+writing dependency_links to lean_kernel_verifier.egg-info/dependency_links.txt
+writing entry points to lean_kernel_verifier.egg-info/entry_points.txt
+writing requirements to lean_kernel_verifier.egg-info/requires.txt
+writing top-level names to lean_kernel_verifier.egg-info/top_level.txt
+reading manifest file 'lean_kernel_verifier.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file 'lean_kernel_verifier.egg-info/SOURCES.txt'
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/lean_kernel_verifier
+creating build/bdist.linux-x86_64/wheel/lean_kernel_verifier/symbolic
+copying build/lib/lean_kernel_verifier/symbolic/geometry_wu.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/symbolic
+copying build/lib/lean_kernel_verifier/symbolic/holonomic_lite.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/symbolic
+copying build/lib/lean_kernel_verifier/symbolic/__init__.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/symbolic
+copying build/lib/lean_kernel_verifier/symbolic/mining.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/symbolic
+creating build/bdist.linux-x86_64/wheel/lean_kernel_verifier/consensus
+copying build/lib/lean_kernel_verifier/consensus/trace_consensus.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/consensus
+copying build/lib/lean_kernel_verifier/consensus/__init__.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/consensus
+copying build/lib/lean_kernel_verifier/isolation.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier
+creating build/bdist.linux-x86_64/wheel/lean_kernel_verifier/runner
+copying build/lib/lean_kernel_verifier/runner/__init__.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/runner
+copying build/lib/lean_kernel_verifier/runner/checker_runner.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/runner
+copying build/lib/lean_kernel_verifier/certificates.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier
+creating build/bdist.linux-x86_64/wheel/lean_kernel_verifier/core
+copying build/lib/lean_kernel_verifier/core/contracts.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/core
+copying build/lib/lean_kernel_verifier/core/__init__.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/core
+copying build/lib/lean_kernel_verifier/core/types.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/core
+copying build/lib/lean_kernel_verifier/core/failure_taxonomy.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/core
+creating build/bdist.linux-x86_64/wheel/lean_kernel_verifier/sanitizer
+copying build/lib/lean_kernel_verifier/sanitizer/template.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/sanitizer
+copying build/lib/lean_kernel_verifier/sanitizer/__init__.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/sanitizer
+copying build/lib/lean_kernel_verifier/sanitizer/sanitizer.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/sanitizer
+copying build/lib/lean_kernel_verifier/__init__.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier
+copying build/lib/lean_kernel_verifier/specification.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier
+copying build/lib/lean_kernel_verifier/__main__.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier
+creating build/bdist.linux-x86_64/wheel/lean_kernel_verifier/gating
+copying build/lib/lean_kernel_verifier/gating/__init__.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/gating
+copying build/lib/lean_kernel_verifier/gating/structural.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/gating
+copying build/lib/lean_kernel_verifier/gating/trace_checks.py -> build/bdist.linux-x86_64/wheel/./lean_kernel_verifier/gating
+running install_egg_info
+Copying lean_kernel_verifier.egg-info to build/bdist.linux-x86_64/wheel/./lean_kernel_verifier-0.3.3-py3.12.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/lean_kernel_verifier-0.3.3.dist-info/WHEEL
+creating '/workspace/scratch/cff1035d7206/engine-closeout-20261004/build-a/.tmp-ew5znv6d/lean_kernel_verifier-0.3.3-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'lean_kernel_verifier/__init__.py'
+adding 'lean_kernel_verifier/__main__.py'
+adding 'lean_kernel_verifier/certificates.py'
+adding 'lean_kernel_verifier/isolation.py'
+adding 'lean_kernel_verifier/specification.py'
+adding 'lean_kernel_verifier/consensus/__init__.py'
+adding 'lean_kernel_verifier/consensus/trace_consensus.py'
+adding 'lean_kernel_verifier/core/__init__.py'
+adding 'lean_kernel_verifier/core/contracts.py'
+adding 'lean_kernel_verifier/core/failure_taxonomy.py'
+adding 'lean_kernel_verifier/core/types.py'
+adding 'lean_kernel_verifier/gating/__init__.py'
+adding 'lean_kernel_verifier/gating/structural.py'
+adding 'lean_kernel_verifier/gating/trace_checks.py'
+adding 'lean_kernel_verifier/runner/__init__.py'
+adding 'lean_kernel_verifier/runner/checker_runner.py'
+adding 'lean_kernel_verifier/sanitizer/__init__.py'
+adding 'lean_kernel_verifier/sanitizer/sanitizer.py'
+adding 'lean_kernel_verifier/sanitizer/template.py'
+adding 'lean_kernel_verifier/symbolic/__init__.py'
+adding 'lean_kernel_verifier/symbolic/geometry_wu.py'
+adding 'lean_kernel_verifier/symbolic/holonomic_lite.py'
+adding 'lean_kernel_verifier/symbolic/mining.py'
+adding 'lean_kernel_verifier-0.3.3.dist-info/licenses/LICENSE'
+adding 'lean_kernel_verifier-0.3.3.dist-info/METADATA'
+adding 'lean_kernel_verifier-0.3.3.dist-info/WHEEL'
+adding 'lean_kernel_verifier-0.3.3.dist-info/entry_points.txt'
+adding 'lean_kernel_verifier-0.3.3.dist-info/top_level.txt'
+adding 'lean_kernel_verifier-0.3.3.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+* Getting build dependencies for sdist...
+running egg_info
+writing lean_kernel_verifier.egg-info/PKG-INFO
+writing dependency_links to lean_kernel_verifier.egg-info/dependency_links.txt
+writing entry points to lean_kernel_verifier.egg-info/entry_points.txt
+writing requirements to lean_kernel_verifier.egg-info/requires.txt
+writing top-level names to lean_kernel_verifier.egg-info/top_level.txt
+reading manifest file 'lean_kernel_verifier.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file 'lean_kernel_verifier.egg-info/SOURCES.txt'
+* Building sdist...
+running sdist
+running egg_info
+writing lean_kernel_verifier.egg-info/PKG-INFO
+writing dependency_links to lean_kernel_verifier.egg-info/dependency_links.txt
+writing entry points to lean_kernel_verifier.egg-info/entry_points.txt
+writing requirements to lean_kernel_verifier.egg-info/requires.txt
+writing top-level names to lean_kernel_verifier.egg-info/top_level.txt
+reading manifest file 'lean_kernel_verifier.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file 'lean_kernel_verifier.egg-info/SOURCES.txt'
+running check
+creating lean_kernel_verifier-0.3.3
+creating lean_kernel_verifier-0.3.3/lean_kernel_verifier
+creating lean_kernel_verifier-0.3.3/lean_kernel_verifier.egg-info
+creating lean_kernel_verifier-0.3.3/lean_kernel_verifier/consensus
+creating lean_kernel_verifier-0.3.3/lean_kernel_verifier/core
+creating lean_kernel_verifier-0.3.3/lean_kernel_verifier/gating
+creating lean_kernel_verifier-0.3.3/lean_kernel_verifier/runner
+creating lean_kernel_verifier-0.3.3/lean_kernel_verifier/sanitizer
+creating lean_kernel_verifier-0.3.3/lean_kernel_verifier/symbolic
+creating lean_kernel_verifier-0.3.3/tests
+copying files to lean_kernel_verifier-0.3.3...
+copying LICENSE -> lean_kernel_verifier-0.3.3
+copying README.md -> lean_kernel_verifier-0.3.3
+copying pyproject.toml -> lean_kernel_verifier-0.3.3
+copying lean_kernel_verifier/__init__.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier
+copying lean_kernel_verifier/__main__.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier
+copying lean_kernel_verifier/certificates.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier
+copying lean_kernel_verifier/isolation.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier
+copying lean_kernel_verifier/specification.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier
+copying lean_kernel_verifier.egg-info/PKG-INFO -> lean_kernel_verifier-0.3.3/lean_kernel_verifier.egg-info
+copying lean_kernel_verifier.egg-info/SOURCES.txt -> lean_kernel_verifier-0.3.3/lean_kernel_verifier.egg-info
+copying lean_kernel_verifier.egg-info/dependency_links.txt -> lean_kernel_verifier-0.3.3/lean_kernel_verifier.egg-info
+copying lean_kernel_verifier.egg-info/entry_points.txt -> lean_kernel_verifier-0.3.3/lean_kernel_verifier.egg-info
+copying lean_kernel_verifier.egg-info/requires.txt -> lean_kernel_verifier-0.3.3/lean_kernel_verifier.egg-info
+copying lean_kernel_verifier.egg-info/top_level.txt -> lean_kernel_verifier-0.3.3/lean_kernel_verifier.egg-info
+copying lean_kernel_verifier/consensus/__init__.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/consensus
+copying lean_kernel_verifier/consensus/trace_consensus.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/consensus
+copying lean_kernel_verifier/core/__init__.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/core
+copying lean_kernel_verifier/core/contracts.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/core
+copying lean_kernel_verifier/core/failure_taxonomy.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/core
+copying lean_kernel_verifier/core/types.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/core
+copying lean_kernel_verifier/gating/__init__.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/gating
+copying lean_kernel_verifier/gating/structural.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/gating
+copying lean_kernel_verifier/gating/trace_checks.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/gating
+copying lean_kernel_verifier/runner/__init__.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/runner
+copying lean_kernel_verifier/runner/checker_runner.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/runner
+copying lean_kernel_verifier/sanitizer/__init__.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/sanitizer
+copying lean_kernel_verifier/sanitizer/sanitizer.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/sanitizer
+copying lean_kernel_verifier/sanitizer/template.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/sanitizer
+copying lean_kernel_verifier/symbolic/__init__.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/symbolic
+copying lean_kernel_verifier/symbolic/geometry_wu.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/symbolic
+copying lean_kernel_verifier/symbolic/holonomic_lite.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/symbolic
+copying lean_kernel_verifier/symbolic/mining.py -> lean_kernel_verifier-0.3.3/lean_kernel_verifier/symbolic
+copying tests/test_berlekamp_massey.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_certificate_cli.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_fail_closed.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_gating.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_generated_certification.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_geometry_parser.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_geometry_wu.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_holonomic.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_isolation.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_live_lean.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_newton_interpolation.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_pair_certificates.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_project_metadata.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_runner.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_sanitizer.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_specification.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_trace_consensus.py -> lean_kernel_verifier-0.3.3/tests
+copying tests/test_verdict_diagnostics.py -> lean_kernel_verifier-0.3.3/tests
+copying lean_kernel_verifier.egg-info/SOURCES.txt -> lean_kernel_verifier-0.3.3/lean_kernel_verifier.egg-info
+Writing lean_kernel_verifier-0.3.3/setup.cfg
+Creating tar archive
+removing 'lean_kernel_verifier-0.3.3' (and everything under it)
+Successfully built lean_kernel_verifier-0.3.3-py3-none-any.whl and lean_kernel_verifier-0.3.3.tar.gz
