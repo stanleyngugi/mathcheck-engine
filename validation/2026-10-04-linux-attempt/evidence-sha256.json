@@ -1,17 +1,19 @@
 {
   "README.md": "e6de8f6be05bc7c086bfab384ca4d270afad978d8e7d9450c86898e98dcd79a4",
-  "consumer-controls.py": "2b2869a4b85f47051fd32521bf4c02bbc71bdd8ba9b51cf4ecd96b96c0b4e3d7",
-  "consumer-controls.json": "bb212ef739a2af28923942d2224fb6f5eed321ba87a1ceba0b9014745eb687b3",
-  "source-tests.txt": "c90fc13831e57abaf8fb37893e25a285bcde01d6b13ae974af3a4f241ccf14d6",
-  "native-tests.txt": "795a33f8d59aca8d579b9525066b56dbb45f2cdd01aed7655f7788a14ab2a10a",
+  "VM_ATTEMPT.md": "db7e1003c128a7d331210c458e59ac76a9ef403215db322c515ceb3676ba1eee",
+  "artifact-hashes.json": "c750ffd767b3ed0a8be251c16f55910f289a931195b35907a6d1252fa9c3ef2c",
   "build-a.txt": "e55fc5a4914898018b4435d701cc519a30992db2ffc08792143a1ba43f905f9c",
   "build-b.txt": "e39a8023bbf1b65117e476fb8c418c8a0d84bf734f1a6732b24156b981721082",
+  "consumer-controls.json": "bb212ef739a2af28923942d2224fb6f5eed321ba87a1ceba0b9014745eb687b3",
+  "consumer-controls.py": "2b2869a4b85f47051fd32521bf4c02bbc71bdd8ba9b51cf4ecd96b96c0b4e3d7",
   "consumer-install.txt": "97dc16e6cbe0421511da86de0f73eb95095879039d06f3ce68e81a2c404e3deb",
   "consumer-pip-check.txt": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
-  "artifact-hashes.json": "c750ffd767b3ed0a8be251c16f55910f289a931195b35907a6d1252fa9c3ef2c",
-  "sdist-comparison.json": "123c9b7a02ca510a1f0c3092d898d006a5c74fe156648776a633796a239dfdf1",
+  "github-status.json": "88b6bd75db560c7ee050ca861a9087e362407507dc4ed0655c944e03919ac94c",
   "host-and-test-results.json": "82b71b2cb1dc12cc0eec0cdc786fc83bfefe5096fdb48e00e80e8177157c07d1",
-  "toolchain.json": "4066f5fc09a873dc3c01ee8d1f99bfe5fba2fb76b2e1b6920fadb8bed495d779",
   "lean-provenance.json": "58e8a6ebfe69107c6b44ff6b01ff36c3bc99c1fb1a75c68df77f53dd609ecfbd",
-  "github-status.json": "88b6bd75db560c7ee050ca861a9087e362407507dc4ed0655c944e03919ac94c"
+  "native-tests.txt": "795a33f8d59aca8d579b9525066b56dbb45f2cdd01aed7655f7788a14ab2a10a",
+  "sdist-comparison.json": "123c9b7a02ca510a1f0c3092d898d006a5c74fe156648776a633796a239dfdf1",
+  "source-tests.txt": "c90fc13831e57abaf8fb37893e25a285bcde01d6b13ae974af3a4f241ccf14d6",
+  "toolchain.json": "4066f5fc09a873dc3c01ee8d1f99bfe5fba2fb76b2e1b6920fadb8bed495d779",
+  "vm-attempt.json": "71ba71eae02786e83e4e33d56696bb7cf1be6939051789a4dfe7af89fc507fb3"
 }

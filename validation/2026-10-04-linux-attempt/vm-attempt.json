@@ -1,0 +1,61 @@
+{
+  "qemu_package": "quicksand-qemu==0.5.12",
+  "qemu_wheel_sha256": "5a63f03c67fd9fa2343a6b81a0b60af0aab5465f926add8a96e1a845882ab308",
+  "qemu_binary_sha256": "48260024c493c812db2845ab4b11947aeaae7a973ec9250c73f47455dff4d20f",
+  "version_probe": {
+    "returncode": 0,
+    "stdout": "QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.16)\nCopyright (c) 2003-2023 Fabrice Bellard and the QEMU Project developers\n",
+    "stderr": ""
+  },
+  "tcg_initialization_probe": {
+    "command": [
+      "timeout",
+      "5",
+      "/workspace/scratch/cff1035d7206/closeout-vm/runtime/quicksand_qemu/bin/qemu-system-x86_64",
+      "-accel",
+      "tcg",
+      "-machine",
+      "none",
+      "-display",
+      "none",
+      "-nodefaults",
+      "-S",
+      "-monitor",
+      "none",
+      "-serial",
+      "none"
+    ],
+    "returncode": 124,
+    "stdout": "",
+    "stderr": "qemu-system-x86_64: terminating on signal 15 from pid 5 (<unknown process>)\n",
+    "environment": {
+      "LD_LIBRARY_PATH": "/workspace/scratch/cff1035d7206/closeout-vm/runtime/quicksand_qemu/bin/lib",
+      "QEMU_MODULE_DIR": "/workspace/scratch/cff1035d7206/closeout-vm/runtime/quicksand_qemu/bin/lib/qemu"
+    },
+    "scope": "Paused machine with no guest OS; exit 124 is the deliberate five-second stop, not a native test pass"
+  },
+  "guest_booted": false,
+  "native_validation_complete": false,
+  "guest_image_expected_sha256": "c1490d1e9a16c0160f3d05c1c7dd07d62d1a4bdae28158f94b53fe8d0998644e",
+  "guest_image_downloaded": false,
+  "prime_api_key_present": false,
+  "prime_config_present": false,
+  "prime_browser_signed_in": false,
+  "prime_browser_evidence": "Sign In button visible in the requested account page",
+  "engine_actions_run": {
+    "id": 37156000537,
+    "commit": "8097d2bdb16bc40ebcde43cb1f92083b8f521b59",
+    "steps": 0,
+    "runner_id": 0
+  },
+  "github_workflow_artifact_download": {
+    "artifact_id": 10363865970,
+    "size_bytes": 5632195992,
+    "connector_max_bytes": 536870912,
+    "result": "rejected for size before download"
+  },
+  "browser_download": {
+    "result": "downloadMedia timed out; browser reported chrome-error://chromewebdata/ for release-assets.githubusercontent.com",
+    "inspection_result": "Browser URL policy rejected binding the chrome-error page; no further attempt made"
+  }
+}
