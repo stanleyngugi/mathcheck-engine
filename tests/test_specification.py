@@ -15,6 +15,10 @@ class SpecificationTests(unittest.TestCase):
             (CheckerRunResult(False, 1, '', 'false', 1, False), 'mathematical_rejection'),
             (CheckerRunResult(False, None, '', 'timeout', 1, True), 'operational_error'),
             (CheckerRunResult(False, None, '', 'backend', 1, False, backend_error=True), 'operational_error'),
+            (CheckerRunResult(False, 124, '', 'wrapper timeout', 1, False), 'operational_error'),
+            (CheckerRunResult(False, 125, '', 'isolation failed', 1, False), 'operational_error'),
+            (CheckerRunResult(False, -9, '', 'killed', 1, False), 'operational_error'),
+            (CheckerRunResult(False, 2, '', 'process failure', 1, False), 'operational_error'),
         )
         for checker, status in cases:
             with self.subTest(status=status):

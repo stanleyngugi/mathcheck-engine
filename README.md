@@ -28,15 +28,26 @@ Berlekamp–Massey, holonomic fitting, and Gröbner-based geometry checks.
 
 ## What a successful check means
 
-The generated native theorem checks `f n == expected[n]` at each supplied index.
-It proves agreement with that finite array. It does not prove that a sequence
-continues forever, that the observations are correct, or that a natural-language
-problem was translated correctly. Symbolic discovery and trace consensus are
-proposal mechanisms, not universal proofs.
+| Interface | Submission | Successful check establishes |
+| --- | --- | --- |
+| `verify_answer` | Nonnegative integer | Exact evaluation, bounded sum/count, or feasibility and leastness against a `ProblemSpec` |
+| `verify_pair_certificate` | Sorted complete pair list and count | Equality with the entire satisfying relation over the declared rectangle |
+| `run_source` with finite sequence template | Restricted Lean definitions | Agreement with every supplied observation in the declared finite index range |
 
-`native_decide` trusts Lean's compiler/runtime in addition to the kernel.
-See the [Lean reference on proof validation](https://lean-lang.org/doc/reference/latest/ValidatingProofs/).
-The project name does not imply kernel-only reduction.
+The structured APIs need no stored expected candidate: trusted code constructs
+a Lean checking obligation from the specification and submitted data. They
+are the backend used by MathCheck RL's primary environment. The finite
+sequence template uses expected observations and remains a separate contract.
+Symbolic discovery and trace consensus propose results; they do not establish
+unbounded correctness. No interface proves prose-to-specification fidelity.
+
+`native_decide` discharges a formal claim by compiled computation and trusts
+Lean's compiler/runtime in addition to the proof infrastructure.
+See the [pinned Lean reference](https://lean-lang.org/doc/reference/4.23.0/Tactic-Proofs/Tactic-Reference/#native_decide).
+The Python expression translator and source templates are trusted and tested,
+not a formally verified compiler. The project name does not imply kernel-only
+reduction. Python can implement the same current bounded acceptance relations;
+Lean's role here is the formal representation and checking architecture.
 
 The sanitizer uses lexical checks, not Lean's AST. The raw runner uses
 subprocess timeouts and is not an operating-system sandbox. For untrusted
@@ -65,8 +76,9 @@ optional and confirms successful LSP diagnostics with a completed CLI check.
 
 The structured API accepts `ProblemSpec(kind, expression, start, stop)` for
 integer evaluation, bounded sums, counts, and least-solution searches. Bounds
-are half-open `[start, stop)`. Model output is parsed as restricted arithmetic,
-then trusted templates generate Lean; arbitrary model-written Lean is unnecessary.
+are half-open `[start, stop)`. Specification expressions are parsed as restricted arithmetic; model output
+supplies only the candidate. Trusted templates generate Lean, so arbitrary
+model-written Lean is unnecessary.
 `verify_answer(spec, candidate, runner)` returns the specification digest,
 candidate, compiler verdict, explicit status, and scope
 `encoded_specification_only`. Backend failures and timeouts are
@@ -168,3 +180,7 @@ binary SHA-256 for audit logs. It is explicitly not an attestation or fingerprin
 of the entire compiler, library, and operating-system dependency chain.
 
 License: MIT for project code; see [LICENSE](LICENSE).
+
+Current source changes and runtime limits are recorded in
+[CURRENT_VALIDATION.md](CURRENT_VALIDATION.md); published release evidence remains
+separate from later source tests.
