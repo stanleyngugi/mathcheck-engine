@@ -35,10 +35,8 @@ def run(lean_bin, output):
                             result = (verify_pair_certificate(spec, candidate, runner) if kind == 'pairs'
                                       else verify_answer(spec, candidate, runner))
                             checker = result.checker
-                            diagnostic = checker.stdout + checker.stderr
-                            false_marker = 'Tactic `native_decide` evaluated' in diagnostic and 'is false' in diagnostic
-                            operational = bool(checker.timed_out or checker.backend_error or
-                                               (not result.verified and not false_marker))
+                            false_marker = result.status == 'mathematical_rejection'
+                            operational = result.status == 'operational_error'
                             row = dict(size=size, kind=kind, repeat=repeat, expected=expected,
                                        verified=result.verified, seconds=time.monotonic()-started,
                                        operational_failure=operational, mathematical_rejection=false_marker,

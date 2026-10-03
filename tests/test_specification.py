@@ -12,7 +12,9 @@ class SpecificationTests(unittest.TestCase):
         spec = ProblemSpec('evaluate', '2+2')
         cases = (
             (CheckerRunResult(True, 0, '', '', 1, False), 'checked_success'),
-            (CheckerRunResult(False, 1, '', 'false', 1, False), 'mathematical_rejection'),
+            (CheckerRunResult(False, 1, 'check.lean:42:2: error: Tactic `native_decide` evaluated that the proposition\n  False\nis false\n', '', 1, False), 'mathematical_rejection'),
+            (CheckerRunResult(False, 1, '', 'error: failed to locate application', 1, False), 'operational_error'),
+            (CheckerRunResult(False, 1, 'check.lean:42:2: error: unknown identifier', '', 1, False), 'operational_error'),
             (CheckerRunResult(False, None, '', 'timeout', 1, True), 'operational_error'),
             (CheckerRunResult(False, None, '', 'backend', 1, False, backend_error=True), 'operational_error'),
             (CheckerRunResult(False, 124, '', 'wrapper timeout', 1, False), 'operational_error'),
@@ -64,6 +66,7 @@ class LiveSpecificationTests(unittest.TestCase):
                         result = verify_answer(spec, candidate, runner)
                         self.assertEqual(result.verified, expected, result.checker.stdout + result.checker.stderr)
                         self.assertFalse(result.checker.timed_out)
+                        self.assertEqual(result.status, 'checked_success' if expected else 'mathematical_rejection')
                         self.assertEqual(result.scope, 'encoded_specification_only')
         finally:
             runner.close()

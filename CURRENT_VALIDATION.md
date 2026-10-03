@@ -1,36 +1,57 @@
 # Candidate source validation — 2026-10-03
 
-Candidate source version: **0.3.3**. This does not replace the public 0.3.2
-release assets or their historical evidence. No candidate release was published.
+Candidate source version: **0.3.3**. No candidate release was published;
+public 0.3.2 artifacts and historical evidence remain unchanged.
 
-Wrapper timeouts/failures, signals, unexpected exits and launch errors are
-classified as operational failures. The README separates scalar contracts,
-complete pair certificates and finite observation checking, including compiler
-and translator trust. CI exports `LEAN_BIN` in the same step as pytest.
+## Engine/RL integration follow-up
 
-The fresh locked Python 3.12.14 environment resolves dependencies and passes
-**63 tests, with 10 live/platform skips and 38 subtests passed**. The versioned
-source wheel builds; companion candidate packaging is documented in MathCheck
-RL's `docs/CURRENT_VALIDATION.md`.
+The structured verdict classifier now requires complete recognized Lean native
+false-decision diagnostics for mathematical rejection. Unknown exit-1 failures,
+truncated output and mixed diagnostics are operational errors. CLI and formatted
+LSP prefixes are covered. The diagnostic contract comes from Lean 4.23.0's
+`tests/lean/run/decideNative.lean`; this is conservative diagnostic interpretation,
+not an exported counterexample or a replacement for current native validation.
 
-Lean 4.23.0 is now installed from the official Linux archive. Its verified
-archive SHA-256 is
+The JSON CLI rejects duplicate object keys, including nested specification keys,
+and catches decoder nesting failures before native execution. Existing handling
+for wrapper timeout/failure exits, signals, unexpected exits and execution-time
+OS errors remains in place. The sweep now uses the same status classifier.
+
+The article was rewritten around a generated count check, leastness, complete
+pair enumeration, the recorded representation optimization, and explicit native
+compiler/translator trust. Its Lean excerpt matches the actual generated
+`examples/generated_count.lean` core modulo whitespace. Specification serialization,
+arithmetic semantics and result fields have not changed.
+
+Fresh source result on Python 3.12.14: **84 passed, 10 live/platform skips,
+40 subtests passed**. Diff hygiene and independent arithmetic examples pass.
+The joint artifact/checking record is maintained in MathCheck RL's
+`docs/CURRENT_VALIDATION.md` after synchronizing its immutable Engine dependency.
+
+This worker has no `/proc` and no stock Lean on PATH. A direct bubblewrap
+capability probe exits 1 with `Can't read /proc/sys/kernel/overflowuid`.
+Live Lean tests are skipped; no current native acceptance or rejection is claimed.
+Run both live suites, the positive/negative controls and the installed-wheel gate
+on supported Linux with Lean 4.23.0 before publishing.
+
+## Earlier candidate evidence
+
+Before this follow-up, the previous worker recorded **63 tests, 10 skips and
+38 subtests**, four candidate wheel builds and installed-package structural checks.
+It installed the official Lean 4.23.0 archive, SHA-256
 `ecd028d6f642b61b451c8687aeeb24dd53789fbfdcb7d4adb8f5cf60eb2022ba`;
-the installed `bin/lean` SHA-256 is
+the binary SHA-256 was
 `cbf5fd536e142ef1beaccf33f788fd8a7f3f29fb214e75c11319a8d8677b4b2b`.
-The stock CLI exits 1 with `error: failed to locate application`: its Linux
-application-path discovery requires `/proc/<pid>/exe`, unavailable in this
-workspace. Bubblewrap also exits 1 because `/proc/sys/kernel/overflowuid` is
-missing. Installation cannot resolve these OS capability failures.
+Stock Lean exited 1 with `error: failed to locate application` because its
+Linux application-path lookup needed unavailable `/proc/<pid>/exe`.
+Bubblewrap also failed its capability probe.
 
-The six companion quickstart controls and 39 procedural/dataset control trials
-all return **operational_error**, with no acceptance evidence. The full release
-gate stops at `lean --version`, before building or native artifact smoke. No
-unisolated reward fallback was added. Earlier Actions jobs were prevented from
-starting by the GitHub account billing lock.
+Its six quickstart controls and 39 procedural/dataset trials all returned
+operational errors, supplying no acceptance evidence. The release gate stopped
+at the version probe. These records remain historical, not fresh evidence for
+this source. Earlier Actions runs were blocked by an account billing lock.
 
-Run complete live suites and the companion manual **Native release candidate
-gate** workflow on supported Linux before publishing. Remaining limits include
-unidentified infrastructure failures returning exit 1, trusted expression
-translation, and production isolation beyond per-process limits. No Mathlib
-installation is required for these current bounded checkers.
+Remaining limits include diagnostic-format dependence, trusted expression
+translation, and production isolation beyond per-process limits. Isolation is
+opt-in in Engine; RL requires the explicitly configured isolated launcher.
+No Mathlib installation is required for the current bounded checkers.

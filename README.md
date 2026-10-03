@@ -15,7 +15,10 @@ non-blocking expansion plan across number theory, combinatorics, algebra, and
 geometry.
 
 The technical article,
-[`Building a Lean-Backed Verifier for Bounded Mathematical Answers`](https://stanleyngugi.netlify.app/posts/mathcheck-engine.html), includes the 48/48 fixed computational sweep.
+[`Building a Lean-Backed Verifier for Bounded Mathematical Answers`](TECHNICAL_ARTICLE.md),
+walks through the actual generated obligation and the historical pair-certificate
+optimization. The [published website](https://stanleyngugi.netlify.app/posts/mathcheck-engine)
+is updated separately.
 The current public release is
 [`v0.3.2`](https://github.com/stanleyngugi/mathcheck-engine/releases/tag/v0.3.2),
 supporting Python 3.11 through 3.13. Exact hashes and release-gate evidence are
@@ -83,6 +86,9 @@ model-written Lean is unnecessary.
 candidate, compiler verdict, explicit status, and scope
 `encoded_specification_only`. Backend failures and timeouts are
 `operational_error`, not mathematical rejection.
+An exit code of 1 alone is inconclusive. Mathematical rejection requires the
+complete recognized native false-decision diagnostic; unfamiliar or mixed
+failures remain operational errors.
 
 ```python
 from lean_kernel_verifier.specification import ProblemSpec, verify_answer
@@ -101,7 +107,9 @@ For a runnable checked-success and checked-rejection walkthrough, see
 
 The command `python -m lean_kernel_verifier --lean-bin /path/to/lean` accepts a
 JSON object on stdin with `specification` and `answer` fields. It exits nonzero
-on invalid input or failed verification. No HTTP service or OS sandbox is claimed.
+on invalid input or failed verification. Duplicate JSON keys, including nested
+specification keys, are rejected before native execution. No HTTP service or OS
+sandbox is claimed by this CLI.
 
 ```python
 from lean_kernel_verifier.runner.checker_runner import CheckerRunConfig, LeanCheckerRunner

@@ -23,6 +23,11 @@ Structured results expose `status`: `checked_success`,
 `mathematical_rejection`, or `operational_error`. Invalid and unsupported
 requests are rejected before these structured APIs run.
 
+Mathematical rejection requires the complete Lean `native_decide` diagnostic
+that its proposition evaluated to false. Exit 1 alone, truncated diagnostics,
+mixed errors or an unrecognized format yield `operational_error`. This is
+conservative diagnostic interpretation, not a separately checked counterexample.
+
 Bounds are half-open nonnegative integers up to 1,000,000, with at most 10,000
 values or pairs. Scalar answers must be in `[0, 10**1000)`; pair counts in
 `[0, 10000]`. Expressions allow restricted integer arithmetic and predicates,
@@ -33,7 +38,9 @@ required; merely supplying valid witnesses is insufficient.
 The JSON stdin CLI exits 0 for a verified supplied claim, 1 for a failed checker
 verdict, 2 for handled malformed requests; other operational failures can also
 exit nonzero. It does not accept a natural-language problem or claim to certify
-one. Use `python -m lean_kernel_verifier --lean-bin /absolute/path/to/lean`.
+one. Duplicate JSON keys at any object depth and decoder nesting failures are
+`invalid_input` before native checking. Use
+`python -m lean_kernel_verifier --lean-bin /absolute/path/to/lean`.
 
 The pinned and tested toolchain is Lean 4.23.0. CLI checking is the default;
 persistent diagnostics require CLI confirmation. The opt-in `lean-isolated`

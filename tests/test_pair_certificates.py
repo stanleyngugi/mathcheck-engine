@@ -45,6 +45,7 @@ def test_live_maximum_certificate_positive_and_incomplete_negative():
             result = verify_pair_certificate(spec, PairCertificate(claimed, answer), runner)
             assert not result.checker.timed_out
             assert result.verified is expected, result.checker.stdout + result.checker.stderr
+            assert result.status == ('checked_success' if expected else 'mathematical_rejection')
             if not expected:
                 assert 'Tactic `native_decide` evaluated' in result.checker.stdout + result.checker.stderr
     finally:
@@ -78,6 +79,7 @@ def test_live_completeness_not_just_witness_validity():
         ):
             result = verify_pair_certificate(spec, PairCertificate(pairs, answer), runner)
             assert result.verified is expected, result.checker.stdout + result.checker.stderr
+            assert result.status == ('checked_success' if expected else 'mathematical_rejection')
             assert not result.checker.timed_out
         empty = PairCountSpec('x < y', 0, 0, 0, 5)
         assert verify_pair_certificate(empty, PairCertificate((), 0), runner).verified

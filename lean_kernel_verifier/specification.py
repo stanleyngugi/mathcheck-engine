@@ -9,6 +9,7 @@ import ast
 from dataclasses import asdict, dataclass
 import hashlib
 import json
+import re
 from typing import Literal
 
 from .runner.checker_runner import LeanCheckerRunner, CheckerRunResult
@@ -23,15 +24,34 @@ VerificationStatus = Literal[
 ]
 
 
+# Lean 4.23's own decideNative regression test specifies this diagnostic.
+# Match complete diagnostics, rather than an exit code or isolated words.
+# CLI prefixes and our formatted LSP prefixes are supported. Unknown formats,
+# truncated output, and additional errors deliberately remain inconclusive.
+_NATIVE_FALSE_DIAGNOSTICS = re.compile(
+    r"(?:"
+    r"(?:[^\n]+:\d+:\d+:\s*error:\s*|error:\s*|\[\d+:\d+\]\s*)"
+    r"Tactic `native_decide` evaluated that the proposition\n"
+    r"(?:[ \t]+[^\n]*\n)+"
+    r"is false\s*"
+    r")+"
+)
+
+
 def checker_status(result: CheckerRunResult) -> VerificationStatus:
-    """Classify checker execution without calling infrastructure failure mathematics."""
-    # Lean reports a rejected check with exit 1. Wrapper failures (124/125),
-    # signals, and other process failures are not mathematical counterexamples.
+    """Classify trusted checker output; exit 1 alone is not a negative decision.
+
+    This interprets diagnostics, not a separately checkable counterexample.
+    A changed diagnostic format fails conservatively as an operational error.
+    """
     if result.timed_out or result.backend_error or result.returncode not in (0, 1):
         return 'operational_error'
-    if result.success:
+    if result.success and result.returncode == 0:
         return 'checked_success'
-    return 'mathematical_rejection'
+    output = (result.stdout + '\n' + result.stderr).strip()
+    if result.returncode == 1 and _NATIVE_FALSE_DIAGNOSTICS.fullmatch(output):
+        return 'mathematical_rejection'
+    return 'operational_error'
 
 
 def _expression(text: str, *, predicate: bool, variable: bool,

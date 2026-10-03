@@ -9,6 +9,15 @@ from .certificates import PairCountSpec, PairCertificate, verify_pair_certificat
 from .runner.checker_runner import CheckerRunConfig, LeanCheckerRunner
 
 
+def _unique_json_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f'duplicate JSON key: {key}')
+        result[key] = value
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--lean-bin', default='lean')
@@ -19,7 +28,7 @@ def main():
         raw = sys.stdin.read(2_000_001)
         if len(raw) > 2_000_000:
             raise ValueError('request exceeds 2 MB character limit')
-        payload = json.loads(raw)
+        payload = json.loads(raw, object_pairs_hook=_unique_json_object)
         if not isinstance(payload, dict) or not isinstance(payload.get('specification'), dict):
             raise ValueError('request requires a specification object')
         if payload['specification'].get('kind') == 'count_pairs':
@@ -35,7 +44,7 @@ def main():
             result = verify_answer(spec, payload['answer'], runner)
         print(json.dumps(asdict(result)))
         return 0 if result.verified else 1
-    except (ValueError, KeyError, TypeError) as exc:
+    except (ValueError, KeyError, TypeError, RecursionError) as exc:
         print(json.dumps({'verified': False, 'status': 'invalid_input', 'error': str(exc)}))
         return 2
     finally:
