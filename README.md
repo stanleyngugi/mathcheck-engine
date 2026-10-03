@@ -184,3 +184,7 @@ License: MIT for project code; see [LICENSE](LICENSE).
 Current source changes and runtime limits are recorded in
 [CURRENT_VALIDATION.md](CURRENT_VALIDATION.md); published release evidence remains
 separate from later source tests.
+
+Source `main` is the unreleased 0.3.3 candidate. Current runtime/install
+evidence and the native validation blocker are recorded in
+[CURRENT_VALIDATION.md](CURRENT_VALIDATION.md); public 0.3.2 assets remain unchanged.

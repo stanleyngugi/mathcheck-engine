@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lean-kernel-verifier"
-version = "0.3.2"
+version = "0.3.3"
 description = "MathCheck Engine: bounded mathematical answers checked with generated Lean 4 programs"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
