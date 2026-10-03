@@ -879,11 +879,11 @@ class LeanCheckerRunner:
                 stdout=proc.stdout,
                 stderr=proc.stderr,
                 duration_ms=duration_ms,
-                timed_out=False,
+                timed_out=proc.returncode == 124,
                 sanitizer_result=sanitizer_result,
                 backend_mode=backend_mode,
                 fallback_used=False,
-                backend_error=False,
+                backend_error=proc.returncode not in (0, 1),
             )
         except subprocess.TimeoutExpired as exc:
             duration_ms = int((time.perf_counter() - start) * 1000)
@@ -909,6 +909,19 @@ class LeanCheckerRunner:
                 stdout="",
                 stderr=f"Lean executable `{self.config.lean_executable}` not found.",
                 duration_ms=duration_ms,
+                timed_out=False,
+                sanitizer_result=sanitizer_result,
+                backend_mode=backend_mode,
+                fallback_used=False,
+                backend_error=True,
+            )
+        except OSError as exc:
+            return CheckerRunResult(
+                success=False,
+                returncode=None,
+                stdout="",
+                stderr=f"Lean checker execution failed: {exc}.",
+                duration_ms=int((time.perf_counter() - start) * 1000),
                 timed_out=False,
                 sanitizer_result=sanitizer_result,
                 backend_mode=backend_mode,

@@ -1,4 +1,5 @@
 import unittest
+import subprocess
 from unittest.mock import patch
 
 from lean_kernel_verifier.runner.checker_runner import CheckerRunConfig, LeanCheckerRunner
@@ -7,6 +8,39 @@ from lean_kernel_verifier.sanitizer.template import build_checker_template
 
 
 class CheckerRunnerTests(unittest.TestCase):
+    def test_process_failure_after_successful_preflight_is_operational(self):
+        from lean_kernel_verifier.specification import ProblemSpec, verify_answer
+
+        version = subprocess.CompletedProcess([], 0, 'Lean (version 4.23.0)', '')
+        for code in (124, 125, -9, 2):
+            with self.subTest(returncode=code):
+                runner = LeanCheckerRunner(CheckerRunConfig(execution_mode='oneshot_cli'))
+                failure = subprocess.CompletedProcess([], code, '', 'controlled infrastructure failure')
+                try:
+                    with patch('lean_kernel_verifier.runner.checker_runner.subprocess.run',
+                               side_effect=[version, failure]):
+                        result = verify_answer(ProblemSpec('evaluate', '2+2'), 4, runner)
+                    self.assertFalse(result.verified)
+                    self.assertEqual(result.status, 'operational_error')
+                    self.assertTrue(result.checker.backend_error)
+                    self.assertEqual(result.checker.timed_out, code == 124)
+                finally:
+                    runner.close()
+
+    def test_execution_os_error_after_preflight_is_structured(self):
+        from lean_kernel_verifier.specification import ProblemSpec, verify_answer
+
+        runner = LeanCheckerRunner(CheckerRunConfig(execution_mode='oneshot_cli'))
+        version = subprocess.CompletedProcess([], 0, 'Lean (version 4.23.0)', '')
+        try:
+            with patch('lean_kernel_verifier.runner.checker_runner.subprocess.run',
+                       side_effect=[version, PermissionError('controlled permission failure')]):
+                result = verify_answer(ProblemSpec('evaluate', '2+2'), 4, runner)
+            self.assertEqual(result.status, 'operational_error')
+            self.assertIn('permission failure', result.checker.stderr)
+        finally:
+            runner.close()
+
     def test_missing_lean_binary_returns_structured_error(self) -> None:
         runner = LeanCheckerRunner(CheckerRunConfig(lean_executable="__missing_lean_binary__"))
         source = build_checker_template(

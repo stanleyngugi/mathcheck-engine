@@ -25,10 +25,12 @@ VerificationStatus = Literal[
 
 def checker_status(result: CheckerRunResult) -> VerificationStatus:
     """Classify checker execution without calling infrastructure failure mathematics."""
+    # Lean reports a rejected check with exit 1. Wrapper failures (124/125),
+    # signals, and other process failures are not mathematical counterexamples.
+    if result.timed_out or result.backend_error or result.returncode not in (0, 1):
+        return 'operational_error'
     if result.success:
         return 'checked_success'
-    if result.timed_out or result.backend_error or result.returncode is None:
-        return 'operational_error'
     return 'mathematical_rejection'
 
 
