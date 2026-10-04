@@ -5,12 +5,15 @@ The exact source tested and built was
 `dce2fc88cee1e98ed3136ac89a4b40eba0d1ada7`. GitHub main matched that commit
 before this evidence-only update. No runtime or package metadata changed.
 
-A subsequent [VM execution attempt](validation/2026-10-04-linux-attempt/VM_ATTEMPT.md)
-installs QEMU and demonstrates TCG initialization, but cannot obtain its Ubuntu
-guest image through the available download routes. No guest or native pass is
-claimed. The latest Engine Actions run also received no runner and started zero
-steps. A Windows Quicksand/QEMU route without WSL is documented for a local
-agent; it still must pass the unchanged native gates.
+A subsequent [VM preflight follow-up](validation/2026-10-04-linux-attempt/VM_PREFLIGHT_FOLLOWUP.md)
+overcame the earlier image download failure and booted Ubuntu under QEMU TCG.
+Stock Lean 4.23.0 started and an unprivileged bubblewrap namespace probe passed
+inside that guest. The transient worker was replaced before the full gate ran
+or guest files were exported. The follow-up is a transcription of observed tool
+results, not a retained full native test report. No native contract or release
+pass is claimed. The latest inspected Engine Actions run received no runner and
+started zero steps. A persistent local Linux host or guest must run the unchanged
+native gates; WSL is not required for the documented QEMU route.
 
 The [full report and logs](validation/2026-10-04-linux-attempt/README.md)
 record fresh source, build, installed-wheel, stock Lean, and isolation attempts:
