@@ -32,6 +32,7 @@ _NATIVE_FALSE_HEADER = re.compile(
     r"(?:[^\n]+:\d+:\d+:\s*error:\s*|error:\s*|\[\d+:\d+\]\s*)"
     r"Tactic `native_decide` evaluated that the proposition"
 )
+_LEAN_WARNING_HEADER = re.compile(r"[^\n]+:\d+:\d+:\s*warning:\s*.*")
 
 
 def _native_false_diagnostics(output: str) -> bool:
@@ -41,6 +42,19 @@ def _native_false_diagnostics(output: str) -> bool:
     index = 0
     decisions = 0
     while index < len(lines):
+        if _LEAN_WARNING_HEADER.fullmatch(lines[index]):
+            index += 1
+            while index < len(lines) and lines[index].startswith((' ', '\t')):
+                index += 1
+            while index < len(lines) and not lines[index].strip():
+                index += 1
+            if index < len(lines) and lines[index].startswith('Note: '):
+                index += 1
+                while index < len(lines) and lines[index].startswith((' ', '\t')):
+                    index += 1
+                while index < len(lines) and not lines[index].strip():
+                    index += 1
+            continue
         if not _NATIVE_FALSE_HEADER.fullmatch(lines[index]):
             return False
         index += 1

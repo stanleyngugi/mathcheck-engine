@@ -21,6 +21,15 @@ def test_complete_negative_decision_in_cli_or_lsp_output(prefix, stream):
     assert checker_status(result) == 'mathematical_rejection'
 
 
+def test_lean_warning_before_complete_negative_decision_remains_a_rejection():
+    output = (
+        'verify.lean:47:44: warning: unused variable `y`\n\n'
+        'Note: This linter can be disabled with `set_option linter.unusedVariables false`\n\n'
+        'verify.lean:56:2: error: ' + FALSE_MESSAGE + '\n'
+    )
+    assert checker_status(CheckerRunResult(False, 1, output, '', 1, False)) == 'mathematical_rejection'
+
+
 @pytest.mark.parametrize('output', [
     '', 'false', 'is false',
     'verify.lean:43:2: error: unsolved goals',
