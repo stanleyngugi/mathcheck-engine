@@ -84,6 +84,31 @@ Live Lean tests are skipped; no current native acceptance or rejection is claime
 Run both live suites, the positive/negative controls and the installed-wheel gate
 on supported Linux with Lean 4.23.0 before publishing.
 
+## Warning-prefixed diagnostic regression and local native attempt — 2026-10-05
+
+Reproduced a Lean 4.23.0 false-decision output that includes a normal unused
+variable warning and its `Note:` continuation before the complete
+`native_decide` rejection. The conservative diagnostic classifier previously
+treated that recognized mathematical rejection as an operational error. The
+narrow parser fix ignores only a syntactically valid Lean warning header, its
+indented continuation and one attached `Note:` block before applying the
+existing complete-diagnostic check. Unknown output remains operational. The
+regression suite passes 19 tests, and the corresponding real-Lean positive and
+negative pair-certificate test passes against the verified 4.23.0 binary.
+
+The fix is commit `fa2f04ce4a1d114f08444944dbf0898515611980` on top of the
+handed-off `af26078be4a316f29be8b10cdc17d30ea1651cab`. The joint artifact/native
+gate then passed source tests, four wheel builds, clean installed-consumer
+checks, structural smoke, Lean startup and quickstart in the persistent Ubuntu
+24.04 guest. The unchanged Engine live-suite stage exceeded its 900-second gate
+limit under QEMU TCG software emulation (`900.218s`); the report remains failed,
+and later required native checks did not run. No Windows skip or targeted test
+is being represented as completion. The machine has no existing Linux host or
+hardware acceleration; cloud compute and publication remain unauthorized until
+explicitly approved. See MathCheck RL's
+[`native-closeout-20261005-local.json`](https://github.com/stanleyngugi/mathcheck-rl/blob/main/docs/evidence/native-closeout-20261005-local.json)
+for the exact joint-gate report and wheel hashes.
+
 ## Earlier candidate evidence
 
 Before this follow-up, the previous worker recorded **63 tests, 10 skips and
