@@ -139,3 +139,28 @@ Remaining limits include diagnostic-format dependence, trusted expression
 translation, and production isolation beyond per-process limits. Isolation is
 opt-in in Engine; RL requires the explicitly configured isolated launcher.
 No Mathlib installation is required for the current bounded checkers.
+
+## Final joint native closeout — 2026-10-05
+
+The unchanged MathCheck joint gate passed on Engine
+`2556e1fec67aabb8823fed10d170df7f42ebf574` and RL
+`62c988f428f35c484b1d851ffb5b5fcb130eb619`. It ran in Ubuntu 24.04.4 under
+QEMU WHPX with hardware acceleration confirmed by `-accel
+whpx,kernel-irqchip=off`, using unprivileged Python 3.12.3, bubblewrap 0.9.0,
+and stock read-only Lean 4.23.0. The official Lean archive digest is
+`ecd028d6f642b61b451c8687aeeb24dd53789fbfdcb7d4adb8f5cf60eb2022ba`; the Lean
+binary digest is `cbf5fd536e142ef1beaccf33f788fd8a7f3f29fb214e75c11319a8d8677b4b2b`.
+
+Engine's full live suite passed **96 tests and 52 subtests in 424.30 seconds**.
+The joint gate exited 0 in 801.238 seconds with native validation complete and
+release readiness true. The complete unmodified report, stage logs, procedural
+and dataset controls, wheel manifest, environment provenance and precise
+optional-skip record are retained in MathCheck RL's
+[native closeout evidence](https://github.com/stanleyngugi/mathcheck-rl/tree/main/docs/evidence/native-closeout-whpx-20261005-final).
+The only skip was the optional PyTorch-backed RL training test module; required
+native skips were zero. Reproducible Engine 0.3.3 wheel SHA-256:
+`da94438427e02382c80dcf366c540c3e625e552966d7c873516aaca7790f6782`.
+
+This passing WHPX run supersedes the earlier TCG timeout and failed WHPX boot
+diagnostics below. The validated GitHub release and published-consumer closeout
+are recorded in the final section after release and Prime Hub verification.
