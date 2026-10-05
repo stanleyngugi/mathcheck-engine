@@ -162,5 +162,25 @@ native skips were zero. Reproducible Engine 0.3.3 wheel SHA-256:
 `da94438427e02382c80dcf366c540c3e625e552966d7c873516aaca7790f6782`.
 
 This passing WHPX run supersedes the earlier TCG timeout and failed WHPX boot
-diagnostics below. The validated GitHub release and published-consumer closeout
-are recorded in the final section after release and Prime Hub verification.
+diagnostics below.
+
+## Publication and fresh-consumer closeout — 2026-10-05
+
+The validated [Engine 0.3.3 release](https://github.com/stanleyngugi/mathcheck-engine/releases/tag/v0.3.3)
+is published with immutable tag target
+`2556e1fec67aabb8823fed10d170df7f42ebf574`. Its downloaded release wheel hash
+matches the joint native gate manifest:
+`da94438427e02382c80dcf366c540c3e625e552966d7c873516aaca7790f6782`.
+
+The validated [RL 0.2.2 release](https://github.com/stanleyngugi/mathcheck-rl/releases/tag/v0.2.2)
+and Prime Hub `stanley-ngugi/mathcheck-rl@0.1.2` are also published. Prime
+reports the candidate as public runtime v1. Fresh Prime CLI and Ubuntu WHPX
+consumer installs passed `pip check`; the Linux consumer ran all six valid,
+invalid, minimum and pair certificate controls against the installed Hub
+package using isolated Lean 4.23.0. Full Prime identity, source pin, artifact
+hash and native consumer evidence is in MathCheck RL's
+[publication closeout record](https://github.com/stanleyngugi/mathcheck-rl/blob/main/docs/evidence/native-closeout-whpx-20261005-final/publication.json).
+
+The joint native gate and installed-consumer checks passed. The only source
+suite skip is optional RL training coverage requiring PyTorch; no required
+native checks were skipped.
