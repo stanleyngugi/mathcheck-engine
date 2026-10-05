@@ -102,12 +102,21 @@ gate then passed source tests, four wheel builds, clean installed-consumer
 checks, structural smoke, Lean startup and quickstart in the persistent Ubuntu
 24.04 guest. The unchanged Engine live-suite stage exceeded its 900-second gate
 limit under QEMU TCG software emulation (`900.218s`); the report remains failed,
-and later required native checks did not run. No Windows skip or targeted test
-is being represented as completion. The machine has no existing Linux host or
-hardware acceleration; cloud compute and publication remain unauthorized until
-explicitly approved. See MathCheck RL's
+and later required native checks did not run. A separate verbose execution of
+the unchanged Engine suite eventually completed against genuine Lean 4.23.0:
+**96 passed, 52 subtests passed in 1,488.11 seconds**. This confirms a time-limit
+problem in TCG; it is diagnostic evidence, not a passing closeout gate. The
+[summary](https://github.com/stanleyngugi/mathcheck-rl/blob/main/docs/evidence/native-engine-diagnostic-20261005-tcg.json)
+and [full transcript](https://github.com/stanleyngugi/mathcheck-rl/blob/main/docs/evidence/native-engine-diagnostic-20261005-tcg.txt)
+are preserved. No
+Windows skip or targeted test is being represented as completion. The machine
+has no existing Linux host and firmware virtualization is currently disabled;
+cloud compute and publication remain unauthorized until explicitly approved.
+See MathCheck RL's
 [`native-closeout-20261005-local.json`](https://github.com/stanleyngugi/mathcheck-rl/blob/main/docs/evidence/native-closeout-20261005-local.json)
-for the exact joint-gate report and wheel hashes.
+for the exact joint-gate report and wheel hashes, plus the
+[`Engine diagnostic summary`](https://github.com/stanleyngugi/mathcheck-rl/blob/main/docs/evidence/native-engine-diagnostic-20261005-tcg.json)
+and [full test log](https://github.com/stanleyngugi/mathcheck-rl/blob/main/docs/evidence/native-engine-diagnostic-20261005-tcg.txt).
 
 ## Earlier candidate evidence
 
